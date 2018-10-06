@@ -6,17 +6,17 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav ml-auto">
-      <ng-container *ngIf="isSignedIn() else appSignOut">
+      <ng-container *ngIf="!isSignedIn() else appSignOut">
         <li class="nav-item">
-          <a [class.active]="isSignInActive" class="nav-link" href="/user/signin">Sign In</a>
+          <a [class.active]="isSignInActive" class="nav-link" routerLink="/user/signin">Sign In</a>
         </li>
         <li class="nav-item">
-          <a [class.active]="isSignUpActive" class="nav-link" href="/user/signup">Sign Up</a>
+          <a [class.active]="isSignUpActive" class="nav-link" routerLink="/user/signup">Sign Up</a>
         </li>
       </ng-container>
       <ng-template #appSignOut>
           <li class="nav-item">
-            <a class="nav-link active" href="/user/signout">Sign Out</a>
+            <a href="#" class="nav-link active">Sign Out</a>
           </li>
       </ng-template>
     </ul>

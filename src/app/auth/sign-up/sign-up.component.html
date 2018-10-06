@@ -1,0 +1,21 @@
+<div class="container">
+  <form>
+    <div class="form-group">
+      <label for="app-input-email">Email address</label>
+      <input [(ngModel)]="model.email" type="email" class="form-control" id="app-input-email" name="email" placeholder="Enter email">
+    </div>
+    <div class="form-group">
+      <label for="app-input-password">Password</label>
+      <input [(ngModel)]="model.password" type="password" class="form-control" id="app-input-password" name="password" placeholder="Password">
+    </div>
+    <div class="form-group">
+      <label for="app-input-password2">Repeat password</label>
+      <input [(ngModel)]="model.repeatedPassword" type="password" class="form-control" id="app-input-password2" name="password2" placeholder="Repeat password">
+    </div>
+    <div class="form-group form-check">
+      <input type="checkbox" class="form-check-input" id="app-check">
+      <label class="form-check-label" for="app-check">I accept <a href="#">Terms of Service</a></label>
+      <button type="button" (click)="signUp()" class="btn btn-primary float-right">Submit</button>
+    </div>
+  </form>
+</div>

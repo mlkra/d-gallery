@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { Router, NavigationEnd } from '@angular/router';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,17 +12,34 @@ export class NavbarComponent implements OnInit {
   isSignInActive: boolean;
   isSignUpActive: boolean;
 
-  constructor(private router: Router) { }
+  constructor(
+    private location: Location,
+    private router: Router,
+    private authService: AuthService
+  ) { }
 
   ngOnInit() {
-    this.isSignInActive = true;
-    this.isSignUpActive = false;
-    // TODO get info from router and adjust variables,
-    //      bind to router event
+    if (this.location.path() === '/user/signin') {
+      this.isSignInActive = false;
+      this.isSignUpActive = true;
+    } else {
+      this.isSignInActive = true;
+      this.isSignUpActive = false;
+    }
+    this.router.events.forEach((event) => {
+      if (event instanceof NavigationEnd) {
+        if (event.urlAfterRedirects === '/user/signin') {
+          this.isSignInActive = false;
+          this.isSignUpActive = true;
+        } else {
+          this.isSignInActive = true;
+          this.isSignUpActive = false;
+        }
+      }
+    });
   }
 
   isSignedIn() {
-    // TODO use AuthService to get info
-    return true;
+    return this.authService.isSignedIn();
   }
 }
