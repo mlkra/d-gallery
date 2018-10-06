@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { DatabaseService } from './database.service';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { Observable, fromEvent } from 'rxjs';
-import { Texture } from './texture';
+import { Texture } from '../rendering/texture';
 
 @Injectable({
   providedIn: 'root'
