@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
-import { StorageService } from '../storage/storage.service';
+import { StorageService } from '../../storage/storage.service';
 import { Observable } from 'rxjs';
-import { Texture } from './texture';
+import { Texture } from '../model/texture';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TextureService {
+  // TODO should it be smaller?
   private thumbSize = 256;
 
   constructor(private storageService: StorageService) { }
 
-  getTexture(gl: WebGLRenderingContext, count: number) {
+  getTextures(gl: WebGLRenderingContext, count: number) {
     const roundedCount = this.roundToPowerOfTwo(count);
     let counter = 0;
     const glTex = gl.createTexture();
@@ -45,14 +46,14 @@ export class TextureService {
         );
         tex.texCoords = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, tex.texCoords);
-        // TODO fill x and check if it matches vertexes
+        const x0 = 0 + 1 / roundedCount * localCounter;
+        const x1 = 1 / roundedCount  + 1 / roundedCount * localCounter;
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-          0.0, 0.0,
-          0.0, 0.0,
-          0.0, 1.0,
-          0.0, 1.0
+          x0, 1,
+          x1, 1,
+          x0, 0,
+          x1, 0
         ]), gl.STATIC_DRAW);
-        // TODO check if this should be here
         gl.generateMipmap(gl.TEXTURE_2D);
         tex.texture = glTex;
 
@@ -76,7 +77,7 @@ export class TextureService {
 
   private generateColorArray(count: number) {
     const arr = [];
-    for (let i = 0; i < count * 256 * 256; i++) {
+    for (let i = 0; i < count * this.thumbSize * this.thumbSize; i++) {
       arr.push(0.0, 0.0, 0.0, 1.0);
     }
     return new Uint8Array(arr);

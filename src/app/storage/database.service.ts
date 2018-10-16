@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AngularFireDatabase } from "@angular/fire/database";
+import { AngularFireDatabase } from '@angular/fire/database';
 import * as _ from 'lodash';
 
 @Injectable({
@@ -8,10 +8,9 @@ import * as _ from 'lodash';
 })
 export class DatabaseService {
   private items: Observable<{}[]>;
-  
+
   constructor(private db: AngularFireDatabase) {
-    // TODO insert appropriate path
-    this.items = db.list('').valueChanges();
+    this.items = db.list('root/images').valueChanges();
   }
 
   getTexPaths(count: number) {

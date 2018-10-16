@@ -1,1 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
+html, body, app-root, app-canvas {
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+}
