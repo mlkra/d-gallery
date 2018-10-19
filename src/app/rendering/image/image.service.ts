@@ -46,12 +46,21 @@ export class ImageService {
         images.push(img);
         console.log(img);
         observer.next(img);
+      }, () => { }, () => {
+        observer.complete();
       });
     });
     return source;
   }
 
-  getImage() {
-
+  getImage(gl: WebGLRenderingContext, image: Image) {
+    const source = new Observable<Image>((observer) => {
+      this.textureService.getTexture(gl, image.texture).subscribe((tex) => {
+        const img = new Image(this.positionBuffer, tex, vec3.create(), vec3.fromValues(1, 1, 1));
+        observer.next(img);
+        observer.complete();
+      });
+    });
+    return source;
   }
 }

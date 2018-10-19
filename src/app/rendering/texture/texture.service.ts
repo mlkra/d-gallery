@@ -9,6 +9,8 @@ import { Texture } from '../model/texture';
 export class TextureService {
   // TODO should it be smaller?
   private thumbSize = 256;
+  // TODO should it be bigger?
+  private imgSize = 1024;
 
   constructor(private storageService: StorageService) { }
 
@@ -58,6 +60,42 @@ export class TextureService {
         tex.texture = glTex;
 
         observer.next(tex);
+      }, () => { }, () => {
+        observer.complete();
+      });
+    });
+    return source;
+  }
+
+  getTexture(gl: WebGLRenderingContext, texture: Texture) {
+    const source = new Observable<Texture>((observer) => {
+      this.storageService.getTexture(texture).subscribe((tex) => {
+        const glTex = gl.createTexture();
+        // TODO check if it is right
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, glTex);
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGBA,
+          gl.RGBA,
+          gl.FLOAT,
+          tex.image
+        );
+        tex.texCoords = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, tex.texCoords);
+        // TODO check if it's right
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+          0, 1,
+          1, 1,
+          0, 0,
+          1, 0
+        ]), gl.STATIC_DRAW);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        tex.texture = glTex;
+
+        observer.next(tex);
+        observer.complete();
       });
     });
     return source;

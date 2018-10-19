@@ -41,6 +41,20 @@ export class StorageService {
     return source;
   }
 
-  // TODO implement
-  getTexture() { }
+  getTexture(texture: Texture) {
+    const source = new Observable<Texture>((observer) => {
+      const path = 'img/' + texture.path.substr(6);
+      this.storage.ref(path).getDownloadURL().subscribe((url) => {
+        const img = new Image();
+        img.crossOrigin = '';
+        const observable = fromEvent(img, 'load');
+        const tex = new Texture(path, img);
+        observable.subscribe((event) => {
+          observer.next(tex);
+        });
+        img.src = url;
+      });
+    });
+    return source;
+  }
 }
