@@ -28,12 +28,13 @@ export class ImageService {
     const images: Image[] = [];
     const source = new Observable<Image>((observer) => {
       this.textureService.getTextures(gl, count).subscribe((tex) => {
-        let x = _.random(-16, 16, true);
-        let z = _.random(-16, 16, true);
+        let x = _.random(-30, 30, true);
+        let z = _.random(-30, 30, true);
+        // TODO bad infinite loop causing problems, maybe add retries limit?
         while (true) {
           let valid = true;
           for (const img of images) {
-            if ((Math.abs(img.position[0] - x) < 2) && (Math.abs(img.position[2] - z) < 2)) {
+            if ((Math.abs(img.position[0] - x) < 1) && (Math.abs(img.position[2] - z) < 1)) {
               valid = false;
               break;
             }
@@ -46,7 +47,7 @@ export class ImageService {
         images.push(img);
         console.log(img);
         observer.next(img);
-      }, () => { }, () => {
+      }, () => {}, () => {
         observer.complete();
       });
     });
@@ -58,6 +59,7 @@ export class ImageService {
       this.textureService.getTexture(gl, image.texture).subscribe((tex) => {
         const img = new Image(this.positionBuffer, tex, vec3.create(), vec3.fromValues(1, 1, 1));
         observer.next(img);
+      }, () => {}, () => {
         observer.complete();
       });
     });

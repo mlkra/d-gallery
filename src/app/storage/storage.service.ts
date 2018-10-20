@@ -36,6 +36,8 @@ export class StorageService {
             img.src = url;
           });
         });
+      }, () => {}, () => {
+        observer.complete();
       });
     });
     return source;
@@ -53,6 +55,8 @@ export class StorageService {
           observer.next(tex);
         });
         img.src = url;
+      }, () => {}, () => {
+        observer.complete();
       });
     });
     return source;

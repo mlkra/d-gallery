@@ -34,7 +34,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       this.renderingService.init(this.gl);
       this.imageService.init(this.gl);
       this.scene = new Scene(this.gl);
-      // TODO add parametr
+      // TODO add parameter
       this.imageService.getImages(this.gl, 10).subscribe((img) => {
         this.scene.images.push(img);
       });
@@ -79,6 +79,9 @@ export class CanvasComponent implements OnInit, AfterViewInit {
             break;
           case 'l':
             this.camera.rotateY(2);
+            break;
+          case ' ':
+            console.log('Download starting... someday');
             break;
         }
       });

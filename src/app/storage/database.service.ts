@@ -18,6 +18,8 @@ export class DatabaseService {
       this.items.subscribe((items) => {
         const paths = _.sampleSize(items, count);
         observer.next(paths);
+      }, () => {}, () => {
+        observer.complete();
       });
     });
     return source;

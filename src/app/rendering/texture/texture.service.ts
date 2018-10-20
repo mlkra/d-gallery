@@ -9,8 +9,6 @@ import { Texture } from '../model/texture';
 export class TextureService {
   // TODO should it be smaller?
   private thumbSize = 256;
-  // TODO should it be bigger?
-  private imgSize = 1024;
 
   constructor(private storageService: StorageService) { }
 
@@ -60,7 +58,7 @@ export class TextureService {
         tex.texture = glTex;
 
         observer.next(tex);
-      }, () => { }, () => {
+      }, () => {}, () => {
         observer.complete();
       });
     });
@@ -95,6 +93,7 @@ export class TextureService {
         tex.texture = glTex;
 
         observer.next(tex);
+      }, () => {}, () => {
         observer.complete();
       });
     });
