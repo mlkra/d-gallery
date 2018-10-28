@@ -5,6 +5,9 @@ import { Camera } from '../model/camera';
 import { vec3 } from 'gl-matrix';
 import { degToRad } from 'src/app/math/math-utils';
 import { ImageService } from '../image/image.service';
+import { StorageService } from 'src/app/storage/storage.service';
+import { Ray } from '../model/ray';
+import { Image } from '../model/image';
 
 @Component({
   selector: 'app-canvas',
@@ -18,6 +21,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   private camera: Camera;
 
   constructor(
+    private storageService: StorageService,
     private imageService: ImageService,
     private renderingService: RenderingService
   ) { }
@@ -46,6 +50,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         100
       );
       (function (_this) {
+        // TODO call method from ControlsService passing calculated timestamp
         function loop(timestamp) {
           _this.renderingService.renderLoop(_this.scene, _this.camera);
           window.requestAnimationFrame(loop);
@@ -54,7 +59,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       })(this);
       // TODO move this to appropriate service
       window.addEventListener('keydown', (event) => {
-        let key = event.key;
+        const key = event.key;
         switch (key) {
           case 'w':
             this.camera.moveZ(0.1);
@@ -82,11 +87,37 @@ export class CanvasComponent implements OnInit, AfterViewInit {
             break;
           case ' ':
             console.log('Download starting... someday');
+            const image = this.intersect(this.scene, this.camera.getRay());
+            if (image) {
+              // TODO start download
+              console.log('Hit!');
+            }
             break;
         }
       });
     } else {
       this.noWebGLMessage = 'Your browser does not support WebGL';
     }
+  }
+
+  private intersect(scene: Scene, ray: Ray) {
+    let nearestImage: Image;
+    let minDist = Infinity;
+    for (const image of scene.images) {
+      const point = ray.intersect(image.position, image.normal);
+      if (point) {
+        if (image.contains(point)) {
+          console.log('valid!!');
+          const dist = vec3.dist(ray.start, point);
+          if (dist < minDist) {
+            nearestImage = image;
+            minDist = dist;
+          }
+        }
+        console.log(point);
+        console.log(image);
+      }
+    }
+    return nearestImage;
   }
 }

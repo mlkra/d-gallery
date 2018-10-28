@@ -124,9 +124,9 @@ export class RenderingService {
   private resizeCanvas(camera: Camera) {
     const canvas = this.gl.canvas;
     const displayWidth = canvas.clientWidth;
-    const displayHeight = canvas.clientHeight;  
-  
-    if (canvas.width != displayWidth || canvas.height != displayHeight) {
+    const displayHeight = canvas.clientHeight;
+
+    if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
       canvas.width = displayWidth;
       canvas.height = displayHeight;
       camera.setAspectRatio(this.calculateAspectRatio());

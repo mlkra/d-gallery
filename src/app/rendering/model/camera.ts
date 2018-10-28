@@ -1,5 +1,6 @@
 import { vec3, mat4 } from 'gl-matrix';
 import { degToRad } from '../../math/math-utils';
+import { Ray } from './ray';
 
 export class Camera {
     projectionMatrix = mat4.create();
@@ -102,5 +103,9 @@ export class Camera {
         this.viewMatrix = mat4.lookAt(
             this.viewMatrix, this.eye, this.center, this.up
         );
+    }
+
+    getRay(): Ray {
+        return new Ray(this.eye, this.front);
     }
 }

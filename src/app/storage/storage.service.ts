@@ -51,6 +51,7 @@ export class StorageService {
         img.crossOrigin = '';
         const observable = fromEvent(img, 'load');
         const tex = new Texture(path, img);
+        // TODO delete unused parameter?
         observable.subscribe((event) => {
           observer.next(tex);
         });
