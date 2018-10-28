@@ -86,11 +86,12 @@ export class CanvasComponent implements OnInit, AfterViewInit {
             this.camera.rotateY(2);
             break;
           case ' ':
-            console.log('Download starting... someday');
             const image = this.intersect(this.scene, this.camera.getRay());
             if (image) {
-              // TODO start download
-              console.log('Hit!');
+              console.log('downloading: ', image.texture.path);
+              this.storageService.getTexture(image.texture).subscribe((tex) => {
+                downloadImage(tex.image.src, 'texture.jpg');
+              });
             }
             break;
         }
@@ -107,17 +108,36 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       const point = ray.intersect(image.position, image.normal);
       if (point) {
         if (image.contains(point)) {
-          console.log('valid!!');
           const dist = vec3.dist(ray.start, point);
           if (dist < minDist) {
             nearestImage = image;
             minDist = dist;
           }
         }
-        console.log(point);
-        console.log(image);
       }
     }
     return nearestImage;
   }
+}
+
+// TODO move to separate class
+function downloadUsingAnchor(blob, filename) {
+  const a = document.createElement('a');
+  a.download = filename;
+  a.href = blob;
+  a.click();
+}
+
+function downloadImage(url: string, name: string) {
+  fetch(url, {
+    headers: new Headers({
+      'Origin': location.origin
+    }),
+    mode: 'cors'
+  }).then((response) => {
+    return response.blob()
+  }).then((blob) => {
+    let blobUrl = window.URL.createObjectURL(blob);
+    downloadUsingAnchor(blobUrl, name);
+  });
 }

@@ -37,6 +37,7 @@ export class StorageService {
           });
         });
       }, () => {}, () => {
+        // TODO check and fix if necessary
         observer.complete();
       });
     });
@@ -54,10 +55,11 @@ export class StorageService {
         // TODO delete unused parameter?
         observable.subscribe((event) => {
           observer.next(tex);
+          observer.complete();
+          console.log('done!');
         });
         img.src = url;
-      }, () => {}, () => {
-        observer.complete();
+        console.log('pf');
       });
     });
     return source;
