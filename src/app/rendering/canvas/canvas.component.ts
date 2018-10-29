@@ -2,12 +2,13 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { RenderingService } from '../rendering.service';
 import { Scene } from '../model/scene';
 import { Camera } from '../model/camera';
-import { vec3 } from 'gl-matrix';
-import { degToRad } from 'src/app/math/math-utils';
+import { glMatrix, vec3 } from 'gl-matrix';
 import { ImageService } from '../image/image.service';
 import { StorageService } from 'src/app/storage/storage.service';
 import { Ray } from '../model/ray';
 import { Image } from '../model/image';
+
+const toRadian = glMatrix.toRadian;
 
 @Component({
   selector: 'app-canvas',
@@ -44,7 +45,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       });
       this.camera = new Camera(
         vec3.fromValues(0, 0, -2),
-        degToRad(90),
+        toRadian(90),
         canvas.width / canvas.height,
         0.1,
         100

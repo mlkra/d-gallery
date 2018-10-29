@@ -1,6 +1,7 @@
-import { vec3, mat4 } from 'gl-matrix';
-import { degToRad } from '../../math/math-utils';
+import { glMatrix, vec3, mat4 } from 'gl-matrix';
 import { Ray } from './ray';
+
+const toRadian = glMatrix.toRadian;
 
 export class Camera {
     projectionMatrix = mat4.create();
@@ -21,9 +22,9 @@ export class Camera {
         private nearPlane: number,
         private farPlane: number
     ) {
-        this.front[0] = Math.cos(degToRad(this.pitch)) * Math.cos(degToRad(this.yaw));
-        this.front[1] = Math.sin(degToRad(this.pitch));
-        this.front[2] = Math.cos(degToRad(this.pitch)) * Math.sin(degToRad(this.yaw));
+        this.front[0] = Math.cos(toRadian(this.pitch)) * Math.cos(toRadian(this.yaw));
+        this.front[1] = Math.sin(toRadian(this.pitch));
+        this.front[2] = Math.cos(toRadian(this.pitch)) * Math.sin(toRadian(this.yaw));
         vec3.normalize(this.front, this.front);
         vec3.cross(this.right, this.up, this.front);
         vec3.normalize(this.right, this.right);
@@ -68,10 +69,10 @@ export class Camera {
         this.yaw += step;
         this.yaw %= 360;
         this.front[0] =
-            Math.cos(degToRad(this.pitch)) * Math.cos(degToRad(this.yaw));
-        this.front[1] = Math.sin(degToRad(this.pitch));
+            Math.cos(toRadian(this.pitch)) * Math.cos(toRadian(this.yaw));
+        this.front[1] = Math.sin(toRadian(this.pitch));
         this.front[2] =
-            Math.cos(degToRad(this.pitch)) * Math.sin(degToRad(this.yaw));
+            Math.cos(toRadian(this.pitch)) * Math.sin(toRadian(this.yaw));
         vec3.normalize(this.front, this.front);
         vec3.cross(this.right, this.up, this.front);
         vec3.normalize(this.right, this.right);
@@ -91,10 +92,10 @@ export class Camera {
         }
 
         this.front[0] =
-            Math.cos(degToRad(this.pitch)) * Math.cos(degToRad(this.yaw));
-        this.front[1] = Math.sin(degToRad(this.pitch));
+            Math.cos(toRadian(this.pitch)) * Math.cos(toRadian(this.yaw));
+        this.front[1] = Math.sin(toRadian(this.pitch));
         this.front[2] =
-            Math.cos(degToRad(this.pitch)) * Math.sin(degToRad(this.yaw));
+            Math.cos(toRadian(this.pitch)) * Math.sin(toRadian(this.yaw));
         vec3.normalize(this.front, this.front);
         vec3.cross(this.right, this.up, this.front);
         vec3.normalize(this.right, this.right);
