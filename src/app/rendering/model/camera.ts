@@ -22,19 +22,12 @@ export class Camera {
         private nearPlane: number,
         private farPlane: number
     ) {
-        this.front[0] = Math.cos(toRadian(this.pitch)) * Math.cos(toRadian(this.yaw));
-        this.front[1] = Math.sin(toRadian(this.pitch));
-        this.front[2] = Math.cos(toRadian(this.pitch)) * Math.sin(toRadian(this.yaw));
-        vec3.normalize(this.front, this.front);
-        vec3.cross(this.right, this.up, this.front);
-        vec3.normalize(this.right, this.right);
-        vec3.add(this.center, this.eye, this.front);
+        this.calculateViewMatrix();
         mat4.perspective(
             this.projectionMatrix,
             fov, aspectRatio,
             nearPlane, farPlane
         );
-        mat4.lookAt(this.viewMatrix, this.eye, this.center, this.up);
     }
 
     setAspectRatio(aspectRation: number) {
@@ -47,39 +40,20 @@ export class Camera {
 
     moveX(step: number) {
         const vecStep = vec3.clone(this.right);
-        vec3.scaleAndAdd(this.eye, this.eye, vecStep, step);
-        vec3.scaleAndAdd(this.center, this.center, vecStep, step);
-        this.viewMatrix = mat4.lookAt(
-            this.viewMatrix, this.eye, this.center, this.up
-        );
+        this.move(vecStep, step);
     }
 
     moveZ(step: number) {
         const vecStep = vec3.clone(this.front);
         vecStep[1] = 0;
         vec3.normalize(vecStep, vecStep);
-        vec3.scaleAndAdd(this.eye, this.eye, vecStep, step);
-        vec3.scaleAndAdd(this.center, this.center, vecStep, step);
-        this.viewMatrix = mat4.lookAt(
-            this.viewMatrix, this.eye, this.center, this.up
-        );
+        this.move(vecStep, step);
     }
 
     rotateY(step: number) {
         this.yaw += step;
         this.yaw %= 360;
-        this.front[0] =
-            Math.cos(toRadian(this.pitch)) * Math.cos(toRadian(this.yaw));
-        this.front[1] = Math.sin(toRadian(this.pitch));
-        this.front[2] =
-            Math.cos(toRadian(this.pitch)) * Math.sin(toRadian(this.yaw));
-        vec3.normalize(this.front, this.front);
-        vec3.cross(this.right, this.up, this.front);
-        vec3.normalize(this.right, this.right);
-        vec3.add(this.center, this.eye, this.front);
-        this.viewMatrix = mat4.lookAt(
-            this.viewMatrix, this.eye, this.center, this.up
-        );
+        this.calculateViewMatrix();
     }
 
     rotateX(step: number) {
@@ -91,6 +65,20 @@ export class Camera {
             this.pitch = -45;
         }
 
+        this.calculateViewMatrix();
+    }
+
+    getRay(): Ray {
+        return new Ray(this.eye, this.front);
+    }
+
+    private move(vecStep: vec3, step: number) {
+        vec3.scaleAndAdd(this.eye, this.eye, vecStep, step);
+        vec3.scaleAndAdd(this.center, this.center, vecStep, step);
+        mat4.lookAt(this.viewMatrix, this.eye, this.center, this.up);
+    }
+
+    private calculateViewMatrix() {
         this.front[0] =
             Math.cos(toRadian(this.pitch)) * Math.cos(toRadian(this.yaw));
         this.front[1] = Math.sin(toRadian(this.pitch));
@@ -101,12 +89,6 @@ export class Camera {
         vec3.normalize(this.right, this.right);
         vec3.add(this.center, this.eye, this.front);
 
-        this.viewMatrix = mat4.lookAt(
-            this.viewMatrix, this.eye, this.center, this.up
-        );
-    }
-
-    getRay(): Ray {
-        return new Ray(this.eye, this.front);
+        mat4.lookAt(this.viewMatrix, this.eye, this.center, this.up);
     }
 }
