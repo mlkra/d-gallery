@@ -3,7 +3,11 @@
         "Coord",
         "LANCZOS",
         "chdir",
+        "devkit",
         "iglob",
-        "krami"
+        "krami",
+        "ngsw",
+        "polyfills",
+        "prefetch"
     ]
 }
