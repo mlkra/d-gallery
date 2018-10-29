@@ -28,10 +28,11 @@ export class ImageService {
     const images: Image[] = [];
     const source = new Observable<Image>((observer) => {
       this.textureService.getTextures(gl, count).subscribe((tex) => {
-        const x = _.random(-40, 40, true);
-        const z = _.random(-40, 40, true);
-        // TODO bad infinite loop causing problems, maybe add retries limit?
+        const x = _.random(-30, 30, true);
+        const z = _.random(-30, 30, true);
+        let tries = 0;
         while (true) {
+          tries++;
           let valid = true;
           for (const image of images) {
             if ((Math.abs(image.position[0] - x) < 1) && (Math.abs(image.position[2] - z) < 1)) {
@@ -40,6 +41,10 @@ export class ImageService {
             }
           }
           if (valid) {
+            break;
+          }
+          if (tries > 10000) {
+            console.log('Image not placed right');
             break;
           }
         }
