@@ -14,10 +14,10 @@ enum MovementButtons {
 const TriggerButton = ' ';
 
 interface Movement {
-  up: boolean;
-  down: boolean;
-  left: boolean;
-  right: boolean;
+  up: number;
+  down: number;
+  left: number;
+  right: number;
 }
 
 interface Rotation {
@@ -29,6 +29,7 @@ interface Rotation {
   providedIn: 'root'
 })
 export class ControlsService {
+  enabled = false;
   private movementSpeed = 0.015;
   private rotationSpeed = 0.1;
   private lastTime: number;
@@ -43,82 +44,42 @@ export class ControlsService {
   ) { }
 
   init(pointer) {
-    this.lastTime = 0;
-    this.movement = {
-      up: false,
-      down: false,
-      left: false,
-      right: false
-    };
-    this.rotation = {
-      dx: 0,
-      dy: 0
-    };
+    this.resetVariables();
     this.triggerDownload = false;
-    // TODO extract method
-    window.addEventListener('keydown', (event) => {
-      const key = event.key;
-      switch (key) {
-        case MovementButtons.Up:
-          this.movement.up = true;
-          break;
-        case MovementButtons.Down:
-          this.movement.down = true;
-          break;
-        case MovementButtons.Left:
-          this.movement.left = true;
-          break;
-        case MovementButtons.Right:
-          this.movement.right = true;
-          break;
-        case TriggerButton:
-          this.triggerDownload = true;
-          break;
-      }
-    });
-    window.addEventListener('keyup', (event) => {
-      const key = event.key;
-      switch (key) {
-        case MovementButtons.Up:
-          this.movement.up = false;
-          break;
-        case MovementButtons.Down:
-          this.movement.down = false;
-          break;
-        case MovementButtons.Left:
-          this.movement.left = false;
-          break;
-        case MovementButtons.Right:
-          this.movement.right = false;
-          break;
-      }
-    });
-    pointer.on('attain', (movements) => {
-      movements.on('data', (move) => {
-        console.log(move);
-        this.rotation.dx += move.dx;
-        this.rotation.dy += move.dy;
-      });
-    });
+    this.initKeyboardMovement();
+    this.initMouseRotation(pointer);
   }
 
   controlsLoop(scene: Scene, camera: Camera, timestamp: number) {
     const time = timestamp - this.lastTime;
     this.lastTime = timestamp;
-    if (this.xor(this.movement.up, this.movement.down)) {
+    this.moveCamera(camera, time);
+    this.rotateCamera(camera);
+    if (this.triggerDownload) {
+      this.triggerDownload = false;
+      this.startDownload(scene, camera);
+    }
+  }
+
+  private moveCamera(camera: Camera, time: number) {
+    // TODO refactor so that it works with joysticks
+    if (this.xor(this.movement.up !== 0, this.movement.down !== 0)) {
       let step = this.movementSpeed * time;
       if (this.movement.down) {
         step = -step;
       }
       camera.moveZ(step);
     }
-    if (this.xor(this.movement.left, this.movement.right)) {
+    if (this.xor(this.movement.left !== 0, this.movement.right !== 0)) {
       let step = this.movementSpeed * time;
       if (this.movement.right) {
         step = -step;
       }
       camera.moveX(step);
     }
+  }
+
+  private rotateCamera(camera: Camera) {
     if (this.rotation.dx !== 0) {
       camera.rotateY(this.rotation.dx * this.rotationSpeed);
     }
@@ -129,9 +90,10 @@ export class ControlsService {
       dx: 0,
       dy: 0
     };
-    if (this.triggerDownload) {
-      this.triggerDownload = false;
-      const image = scene.intersect(camera.getRay());
+  }
+
+  private startDownload(scene: Scene, camera: Camera) {
+    const image = scene.intersect(camera.getRay());
       if (image) {
         console.log('downloading: ', image.texture.path);
         // TODO delegate download somewhere (popup component?)
@@ -139,7 +101,74 @@ export class ControlsService {
           this.imageService.downloadImage(tex.image.src, 'texture.jpg');
         });
       }
-    }
+  }
+
+  private resetVariables() {
+    this.lastTime = 0;
+    this.movement = {
+      up: 0,
+      down: 0,
+      left: 0,
+      right: 0
+    };
+    this.rotation = {
+      dx: 0,
+      dy: 0
+    };
+  }
+
+  private initKeyboardMovement() {
+    window.addEventListener('keydown', (event) => {
+      if (this.enabled) {
+        const key = event.key;
+        switch (key) {
+          case MovementButtons.Up:
+            this.movement.up = 1;
+            break;
+          case MovementButtons.Down:
+            this.movement.down = 1;
+            break;
+          case MovementButtons.Left:
+            this.movement.left = 1;
+            break;
+          case MovementButtons.Right:
+            this.movement.right = 1;
+            break;
+          case TriggerButton:
+            this.triggerDownload = true;
+            break;
+        }
+      }
+    });
+    window.addEventListener('keyup', (event) => {
+      if (this.enabled) {
+        const key = event.key;
+        switch (key) {
+          case MovementButtons.Up:
+            this.movement.up = 0;
+            break;
+          case MovementButtons.Down:
+            this.movement.down = 0;
+            break;
+          case MovementButtons.Left:
+            this.movement.left = 0;
+            break;
+          case MovementButtons.Right:
+            this.movement.right = 0;
+            break;
+        }
+      }
+    });
+  }
+
+  private initMouseRotation(pointer) {
+    pointer.on('attain', (movements) => {
+      movements.on('data', (move) => {
+        console.log(move);
+        this.rotation.dx += move.dx;
+        this.rotation.dy += move.dy;
+      });
+    });
   }
 
   private xor(a: boolean, b: boolean) {
