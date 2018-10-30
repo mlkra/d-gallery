@@ -7,6 +7,8 @@ import { ImageService } from '../image/image.service';
 import { StorageService } from 'src/app/storage/storage.service';
 import { Ray } from '../model/ray';
 import { Image } from '../model/image';
+import { ControlsService } from 'src/app/controls/controls.service';
+import * as pointer from 'pointer-lock';
 
 const toRadian = glMatrix.toRadian;
 
@@ -20,10 +22,12 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   private gl: WebGLRenderingContext;
   private scene: Scene;
   private camera: Camera;
+  private pointer;
 
   constructor(
     private storageService: StorageService,
     private imageService: ImageService,
+    private controlsService: ControlsService,
     private renderingService: RenderingService
   ) { }
 
@@ -53,50 +57,60 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       (function (_this) {
         // TODO call method from ControlsService passing calculated timestamp
         function loop(timestamp) {
+          _this.controlsService.controlsLoop(_this.camera, timestamp);
           _this.renderingService.renderLoop(_this.scene, _this.camera);
           window.requestAnimationFrame(loop);
         }
         window.requestAnimationFrame(loop);
       })(this);
-      // TODO move this to appropriate service
-      window.addEventListener('keydown', (event) => {
-        const key = event.key;
-        switch (key) {
-          case 'w':
-            this.camera.moveZ(0.1);
-            break;
-          case 's':
-            this.camera.moveZ(-0.1);
-            break;
-          case 'a':
-            this.camera.moveX(0.1);
-            break;
-          case 'd':
-            this.camera.moveX(-0.1);
-            break;
-          case 'i':
-            this.camera.rotateX(2);
-            break;
-          case 'k':
-            this.camera.rotateX(-2);
-            break;
-          case 'j':
-            this.camera.rotateY(-2);
-            break;
-          case 'l':
-            this.camera.rotateY(2);
-            break;
-          case ' ':
-            const image = this.intersect(this.scene, this.camera.getRay());
-            if (image) {
-              console.log('downloading: ', image.texture.path);
-              this.storageService.getTexture(image.texture).subscribe((tex) => {
-                downloadImage(tex.image.src, 'texture.jpg');
-              });
-            }
-            break;
-        }
+      if (!pointer.available()) {
+        // TODO switch if not available
+        console.log('Pointer not available. Fallback to keyboard!');
+      }
+      this.pointer = pointer(canvas);
+      this.controlsService.init(this.pointer);
+      canvas.addEventListener('onclick', () => {
+        this.pointer.request();
       });
+      // TODO move this to appropriate service
+      // window.addEventListener('keydown', (event) => {
+      //   const key = event.key;
+      //   switch (key) {
+      //     case 'w':
+      //       this.camera.moveZ(0.1);
+      //       break;
+      //     case 's':
+      //       this.camera.moveZ(-0.1);
+      //       break;
+      //     case 'a':
+      //       this.camera.moveX(0.1);
+      //       break;
+      //     case 'd':
+      //       this.camera.moveX(-0.1);
+      //       break;
+      //     case 'i':
+      //       this.camera.rotateX(2);
+      //       break;
+      //     case 'k':
+      //       this.camera.rotateX(-2);
+      //       break;
+      //     case 'j':
+      //       this.camera.rotateY(-2);
+      //       break;
+      //     case 'l':
+      //       this.camera.rotateY(2);
+      //       break;
+      //     case ' ':
+      //       const image = this.intersect(this.scene, this.camera.getRay());
+      //       if (image) {
+      //         console.log('downloading: ', image.texture.path);
+      //         this.storageService.getTexture(image.texture).subscribe((tex) => {
+      //           downloadImage(tex.image.src, 'texture.jpg');
+      //         });
+      //       }
+      //       break;
+      //   }
+      // });
     } else {
       this.noWebGLMessage = 'Your browser does not support WebGL';
     }
@@ -136,9 +150,9 @@ function downloadImage(url: string, name: string) {
     }),
     mode: 'cors'
   }).then((response) => {
-    return response.blob()
+    return response.blob();
   }).then((blob) => {
-    let blobUrl = window.URL.createObjectURL(blob);
+    const blobUrl = window.URL.createObjectURL(blob);
     downloadUsingAnchor(blobUrl, name);
   });
 }

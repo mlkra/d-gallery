@@ -29,8 +29,10 @@
     "gl-matrix": "^2.8.1",
     "jquery": "^3.3.1",
     "lodash": "^4.17.11",
+    "pointer-lock": "0.0.4",
     "popper.js": "^1.14.4",
     "rxjs": "~6.2.0",
+    "stream": "0.0.2",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
