@@ -25,7 +25,6 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   private pointer;
 
   constructor(
-    private storageService: StorageService,
     private imageService: ImageService,
     private controlsService: ControlsService,
     private renderingService: RenderingService
@@ -38,8 +37,6 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     const canvas: HTMLCanvasElement = document.querySelector('#app-canvas');
     this.gl = canvas.getContext('webgl');
     if (this.gl) {
-      // TODO init control?? service
-      //      get images and add theme to scene
       this.renderingService.init(this.gl);
       this.imageService.init(this.gl);
       this.scene = new Scene(this.gl);
@@ -55,9 +52,8 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         100
       );
       (function (_this) {
-        // TODO call method from ControlsService passing calculated timestamp
         function loop(timestamp) {
-          _this.controlsService.controlsLoop(_this.camera, timestamp);
+          _this.controlsService.controlsLoop(_this.scene, _this.camera, timestamp);
           _this.renderingService.renderLoop(_this.scene, _this.camera);
           window.requestAnimationFrame(loop);
         }
@@ -72,87 +68,8 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       canvas.addEventListener('onclick', () => {
         this.pointer.request();
       });
-      // TODO move this to appropriate service
-      // window.addEventListener('keydown', (event) => {
-      //   const key = event.key;
-      //   switch (key) {
-      //     case 'w':
-      //       this.camera.moveZ(0.1);
-      //       break;
-      //     case 's':
-      //       this.camera.moveZ(-0.1);
-      //       break;
-      //     case 'a':
-      //       this.camera.moveX(0.1);
-      //       break;
-      //     case 'd':
-      //       this.camera.moveX(-0.1);
-      //       break;
-      //     case 'i':
-      //       this.camera.rotateX(2);
-      //       break;
-      //     case 'k':
-      //       this.camera.rotateX(-2);
-      //       break;
-      //     case 'j':
-      //       this.camera.rotateY(-2);
-      //       break;
-      //     case 'l':
-      //       this.camera.rotateY(2);
-      //       break;
-      //     case ' ':
-      //       const image = this.intersect(this.scene, this.camera.getRay());
-      //       if (image) {
-      //         console.log('downloading: ', image.texture.path);
-      //         this.storageService.getTexture(image.texture).subscribe((tex) => {
-      //           downloadImage(tex.image.src, 'texture.jpg');
-      //         });
-      //       }
-      //       break;
-      //   }
-      // });
     } else {
       this.noWebGLMessage = 'Your browser does not support WebGL';
     }
   }
-
-  private intersect(scene: Scene, ray: Ray) {
-    let nearestImage: Image;
-    let minDist = Infinity;
-    for (const image of scene.images) {
-      const point = ray.intersect(image.position, image.normal);
-      if (point) {
-        if (image.contains(point)) {
-          const dist = vec3.dist(ray.start, point);
-          if (dist < minDist) {
-            nearestImage = image;
-            minDist = dist;
-          }
-        }
-      }
-    }
-    return nearestImage;
-  }
-}
-
-// TODO move to separate class
-function downloadUsingAnchor(blob, filename) {
-  const a = document.createElement('a');
-  a.download = filename;
-  a.href = blob;
-  a.click();
-}
-
-function downloadImage(url: string, name: string) {
-  fetch(url, {
-    headers: new Headers({
-      'Origin': location.origin
-    }),
-    mode: 'cors'
-  }).then((response) => {
-    return response.blob();
-  }).then((blob) => {
-    const blobUrl = window.URL.createObjectURL(blob);
-    downloadUsingAnchor(blobUrl, name);
-  });
 }

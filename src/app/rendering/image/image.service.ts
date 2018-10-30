@@ -70,4 +70,25 @@ export class ImageService {
     });
     return source;
   }
+
+  downloadImage(url: string, name: string) {
+    fetch(url, {
+      headers: new Headers({
+        'Origin': location.origin
+      }),
+      mode: 'cors'
+    }).then((response) => {
+      return response.blob();
+    }).then((blob) => {
+      const blobUrl = window.URL.createObjectURL(blob);
+      this.downloadUsingAnchor(blobUrl, name);
+    });
+  }
+
+  private downloadUsingAnchor(blob, filename) {
+    const a = document.createElement('a');
+    a.download = filename;
+    a.href = blob;
+    a.click();
+  }
 }

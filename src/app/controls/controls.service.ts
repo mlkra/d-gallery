@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Camera } from '../rendering/model/camera';
+import { Scene } from '../rendering/model/scene';
+import { StorageService } from '../storage/storage.service';
+import { ImageService } from '../rendering/image/image.service';
 
 enum MovementButtons {
   Up = 'w',
@@ -7,6 +10,8 @@ enum MovementButtons {
   Left = 'a',
   Right = 'd'
 }
+
+const TriggerButton = ' ';
 
 interface Movement {
   up: boolean;
@@ -29,8 +34,13 @@ export class ControlsService {
   private lastTime: number;
   private movement: Movement;
   private rotation: Rotation;
+  private triggerDownload: boolean;
 
-  constructor() { }
+  // TODO remove later
+  constructor(
+    private storageService: StorageService,
+    private imageService: ImageService
+  ) { }
 
   init(pointer) {
     this.lastTime = 0;
@@ -44,46 +54,25 @@ export class ControlsService {
       dx: 0,
       dy: 0
     };
+    this.triggerDownload = false;
     // TODO extract method
     window.addEventListener('keydown', (event) => {
       const key = event.key;
       switch (key) {
         case MovementButtons.Up:
           this.movement.up = true;
-          // this.camera.moveZ(0.1);
           break;
         case MovementButtons.Down:
           this.movement.down = true;
-          // this.camera.moveZ(-0.1);
           break;
         case MovementButtons.Left:
           this.movement.left = true;
-          // this.camera.moveX(0.1);
           break;
         case MovementButtons.Right:
           this.movement.right = true;
-          // this.camera.moveX(-0.1);
           break;
-        case 'i':
-          // this.camera.rotateX(2);
-          break;
-        case 'k':
-          // this.camera.rotateX(-2);
-          break;
-        case 'j':
-          // this.camera.rotateY(-2);
-          break;
-        case 'l':
-          // this.camera.rotateY(2);
-          break;
-        case ' ':
-          // const image = this.intersect(this.scene, this.camera.getRay());
-          // if (image) {
-          //   console.log('downloading: ', image.texture.path);
-          //   this.storageService.getTexture(image.texture).subscribe((tex) => {
-          //     downloadImage(tex.image.src, 'texture.jpg');
-          //   });
-          // }
+        case TriggerButton:
+          this.triggerDownload = true;
           break;
       }
     });
@@ -92,40 +81,15 @@ export class ControlsService {
       switch (key) {
         case MovementButtons.Up:
           this.movement.up = false;
-          // this.camera.moveZ(0.1);
           break;
         case MovementButtons.Down:
           this.movement.down = false;
-          // this.camera.moveZ(-0.1);
           break;
         case MovementButtons.Left:
           this.movement.left = false;
-          // this.camera.moveX(0.1);
           break;
         case MovementButtons.Right:
           this.movement.right = false;
-          // this.camera.moveX(-0.1);
-          break;
-        case 'i':
-          // this.camera.rotateX(2);
-          break;
-        case 'k':
-          // this.camera.rotateX(-2);
-          break;
-        case 'j':
-          // this.camera.rotateY(-2);
-          break;
-        case 'l':
-          // this.camera.rotateY(2);
-          break;
-        case ' ':
-          // const image = this.intersect(this.scene, this.camera.getRay());
-          // if (image) {
-          //   console.log('downloading: ', image.texture.path);
-          //   this.storageService.getTexture(image.texture).subscribe((tex) => {
-          //     downloadImage(tex.image.src, 'texture.jpg');
-          //   });
-          // }
           break;
       }
     });
@@ -138,7 +102,7 @@ export class ControlsService {
     });
   }
 
-  controlsLoop(camera: Camera, timestamp: number) {
+  controlsLoop(scene: Scene, camera: Camera, timestamp: number) {
     const time = timestamp - this.lastTime;
     this.lastTime = timestamp;
     if (this.xor(this.movement.up, this.movement.down)) {
@@ -165,6 +129,17 @@ export class ControlsService {
       dx: 0,
       dy: 0
     };
+    if (this.triggerDownload) {
+      this.triggerDownload = false;
+      const image = scene.intersect(camera.getRay());
+      if (image) {
+        console.log('downloading: ', image.texture.path);
+        // TODO delegate download somewhere (popup component?)
+        this.storageService.getTexture(image.texture).subscribe((tex) => {
+          this.imageService.downloadImage(tex.image.src, 'texture.jpg');
+        });
+      }
+    }
   }
 
   private xor(a: boolean, b: boolean) {
