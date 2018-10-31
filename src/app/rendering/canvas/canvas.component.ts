@@ -4,9 +4,6 @@ import { Scene } from '../model/scene';
 import { Camera } from '../model/camera';
 import { glMatrix, vec3 } from 'gl-matrix';
 import { ImageService } from '../image/image.service';
-import { StorageService } from 'src/app/storage/storage.service';
-import { Ray } from '../model/ray';
-import { Image } from '../model/image';
 import { ControlsService } from 'src/app/controls/controls.service';
 import * as pointer from 'pointer-lock';
 
@@ -63,6 +60,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         // TODO switch if not available
         console.log('Pointer not available. Fallback to keyboard!');
       }
+      // TODO this should be in controls module
       this.pointer = pointer(canvas);
       this.controlsService.init(this.pointer);
       canvas.addEventListener('onclick', () => {
