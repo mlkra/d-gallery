@@ -41,24 +41,8 @@ export class JoystickService implements MovementController, RotationController {
     this.movementJoystick = nipplejs.create(options);
     this.movementJoystick.on('move', (event, data) => {
       if (this.movementEnabled) {
-        if (data.direction) {
-          switch (data.direction.angle) {
-            case 'left':
-              this.movement.dx = data.distance;
-              break;
-            case 'right':
-              this.movement.dx = -data.distance;
-              break;
-            case 'up':
-              this.movement.dy = data.distance;
-              break;
-            case 'down':
-              this.movement.dy = -data.distance;
-              break;
-          }
-        }
-        console.log(event);
-        console.log(data);
+          this.movement.dx = -data.distance * Math.cos(data.angle.radian);
+          this.movement.dy = data.distance * Math.sin(data.angle.radian);
       }
     });
     this.movementJoystick.on('end', () => {
@@ -92,24 +76,8 @@ export class JoystickService implements MovementController, RotationController {
     this.rotationJoystick = nipplejs.create(options);
     this.rotationJoystick.on('move', (event, data) => {
       if (this.rotationEnabled) {
-        if (data.direction) {
-        switch (data.direction.angle) {
-            case 'left':
-              this.rotation.dx = -data.distance;
-              break;
-            case 'right':
-              this.rotation.dx = data.distance;
-              break;
-            case 'up':
-              this.rotation.dy = data.distance;
-              break;
-            case 'down':
-              this.rotation.dy = -data.distance;
-              break;
-          }
-        }
-        console.log(event);
-        console.log(data);
+          this.rotation.dx = data.distance * Math.cos(data.angle.radian);
+          this.rotation.dy = data.distance * Math.sin(data.angle.radian);
       }
     });
     this.rotationJoystick.on('end', () => {
