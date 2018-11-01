@@ -8,7 +8,7 @@ import { RotationController } from '../interface/rotation-controller';
   providedIn: 'root'
 })
 export class JoystickService implements MovementController, RotationController {
-  movementSpeed = 0.0005;
+  movementSpeed = 0.0001;
   rotationSpeed = 0.001;
   movementEnabled: boolean;
   rotationEnabled: boolean;

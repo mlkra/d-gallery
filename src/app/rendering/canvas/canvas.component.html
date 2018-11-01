@@ -1,2 +1,3 @@
-<canvas id="app-canvas">Your browser does not support canvas element!</canvas>
+<canvas *ngIf="!noWebGLMessage" id="app-canvas">Your browser does not support canvas element!</canvas>
 <p *ngIf="noWebGLMessage">{{ noWebGLMessage }}</p>
+<app-trigger-button>

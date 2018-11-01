@@ -30,6 +30,12 @@ export class CanvasComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     const canvas: HTMLCanvasElement = document.querySelector('#app-canvas');
+    if ('ontouchstart' in document.documentElement) {
+      canvas.addEventListener('click', () => {
+        // TODO improve
+        document.body.webkitRequestFullscreen();
+      });
+    }
     this.gl = canvas.getContext('webgl');
     if (this.gl) {
       this.renderingService.init(this.gl);
@@ -54,10 +60,11 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         }
         window.requestAnimationFrame(loop);
       })(this);
-      // TODO this should be in controls module
       this.controlsService.init();
     } else {
-      this.noWebGLMessage = 'Your browser does not support WebGL';
+      setTimeout(() => {
+        this.noWebGLMessage = 'Your browser does not support WebGL';
+      })
     }
   }
 }

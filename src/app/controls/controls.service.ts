@@ -10,6 +10,7 @@ import { MovementController } from './interface/movement-controller';
 import { RotationController } from './interface/rotation-controller';
 import { TriggerController } from './interface/trigger-controller';
 import * as pointer from 'pointer-lock';
+import { TriggerButtonService } from './service/trigger-button.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,7 @@ export class ControlsService {
     private joystickService: JoystickService,
     private keyboardService: KeyboardService,
     private mouseService: MouseService,
+    private triggerButtonService: TriggerButtonService,
     private storageService: StorageService,
     private imageService: ImageService
   ) { }
@@ -34,14 +36,16 @@ export class ControlsService {
     if ((pointer.available()) && !('ontouchstart' in document.documentElement)) {
       this.movementController = this.keyboardService;
       this.rotationController = this.mouseService;
+      this.triggerController = this.keyboardService;
     } else if ('ontouchstart' in document.documentElement) {
       this.movementController = this.joystickService;
       this.rotationController = this.joystickService;
+      this.triggerController = this.triggerButtonService;
     } else {
       this.movementController = this.keyboardService;
       this.rotationController = this.keyboardService;
+      this.triggerController = this.keyboardService;
     }
-    this.triggerController = this.keyboardService;
     this.movementController.initMovement();
     this.rotationController.initRotation();
     this.triggerController.initTrigger();
