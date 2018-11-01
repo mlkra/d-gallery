@@ -5,7 +5,6 @@ import { Camera } from '../model/camera';
 import { glMatrix, vec3 } from 'gl-matrix';
 import { ImageService } from '../image/image.service';
 import { ControlsService } from 'src/app/controls/controls.service';
-import * as pointer from 'pointer-lock';
 
 const toRadian = glMatrix.toRadian;
 
@@ -19,7 +18,6 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   private gl: WebGLRenderingContext;
   private scene: Scene;
   private camera: Camera;
-  private pointer;
 
   constructor(
     private imageService: ImageService,
@@ -56,16 +54,8 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         }
         window.requestAnimationFrame(loop);
       })(this);
-      if (!pointer.available()) {
-        // TODO switch if not available
-        console.log('Pointer not available. Fallback to keyboard!');
-      }
       // TODO this should be in controls module
-      this.pointer = pointer(canvas);
-      this.controlsService.init(this.pointer);
-      canvas.addEventListener('onclick', () => {
-        this.pointer.request();
-      });
+      this.controlsService.init();
     } else {
       this.noWebGLMessage = 'Your browser does not support WebGL';
     }
