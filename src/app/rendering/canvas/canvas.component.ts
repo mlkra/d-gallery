@@ -5,6 +5,8 @@ import { Camera } from '../model/camera';
 import { glMatrix, vec3 } from 'gl-matrix';
 import { ImageService } from '../image/image.service';
 import { ControlsService } from 'src/app/controls/controls.service';
+import { StorageService } from 'src/app/storage/storage.service';
+import { ModalState } from '../download-popup/download-popup.component';
 
 const toRadian = glMatrix.toRadian;
 
@@ -15,12 +17,16 @@ const toRadian = glMatrix.toRadian;
 })
 export class CanvasComponent implements OnInit, AfterViewInit {
   noWebGLMessage: string;
+  imgSrc: string;
+  showModal: boolean = false;
+
   private gl: WebGLRenderingContext;
   private scene: Scene;
   private camera: Camera;
 
   constructor(
     private imageService: ImageService,
+    private storageService: StorageService,
     private controlsService: ControlsService,
     private renderingService: RenderingService
   ) { }
@@ -31,10 +37,10 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     const canvas: HTMLCanvasElement = document.querySelector('#app-canvas');
     if ('ontouchstart' in document.documentElement) {
-      canvas.addEventListener('click', () => {
-        // TODO improve
-        document.body.webkitRequestFullscreen();
-      });
+      // canvas.addEventListener('click', () => {
+      //   // TODO improve
+      //   document.body.webkitRequestFullscreen();
+      // });
     }
     this.gl = canvas.getContext('webgl');
     if (this.gl) {
@@ -54,7 +60,14 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       );
       (function (_this) {
         function loop(timestamp) {
-          _this.controlsService.controlsLoop(_this.scene, _this.camera, timestamp);
+          // TODO fix
+          let res = _this.controlsService.controlsLoop(_this.scene, _this.camera, timestamp);
+          if (res.download) {
+            _this.showModal = true;
+            _this.storageService.getTexture(res.texture).subscribe((tex) => {
+              _this.imgSrc = tex.image.src;
+            });
+          }
           _this.renderingService.renderLoop(_this.scene, _this.camera);
           window.requestAnimationFrame(loop);
         }
@@ -65,6 +78,20 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       setTimeout(() => {
         this.noWebGLMessage = 'Your browser does not support WebGL';
       })
+    }
+  }
+
+  onToggle(visible: ModalState) {
+    console.log('onToggle ', visible);
+    switch (visible) {
+      case ModalState.VISIBLE:
+        this.showModal = true;
+        this.controlsService.disableControls();
+        break;
+      case ModalState.HIDDEN:
+        this.showModal = false;
+        this.controlsService.enableControls();
+        break;
     }
   }
 }

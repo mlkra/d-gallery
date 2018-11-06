@@ -56,7 +56,8 @@ export class ControlsService {
     this.lastTime = timestamp;
     this.moveCamera(camera, time);
     this.rotateCamera(camera, time);
-    this.checkTrigger(scene, camera);
+    let res = this.checkTrigger(scene, camera);
+    return res;
   }
 
   enableControls() {
@@ -76,8 +77,17 @@ export class ControlsService {
   private checkTrigger(scene: Scene, camera: Camera) {
     if (this.triggerController.triggerDownload) {
       this.triggerController.triggerDownload = false;
-      this.startDownload(scene, camera);
+      let img = this.startDownload(scene, camera);
+      if (img) {
+        return {
+          download: true,
+          texture: img.texture
+        };
+      }
     }
+    return {
+      download: false
+    };
   }
   
   private moveCamera(camera: Camera, time: number) {
@@ -102,7 +112,7 @@ export class ControlsService {
     }
   }
 
-  private startDownload(scene: Scene, camera: Camera) {
+  private startDownload2(scene: Scene, camera: Camera) {
     const image = scene.intersect(camera.getRay());
     if (image) {
       console.log('downloading: ', image.texture.path);
@@ -111,5 +121,10 @@ export class ControlsService {
         this.imageService.downloadImage(tex.image.src, 'texture.jpg');
       });
     }
+  }
+
+  private startDownload(scene: Scene, camera: Camera) {
+    const image = scene.intersect(camera.getRay());
+    return image;
   }
 }

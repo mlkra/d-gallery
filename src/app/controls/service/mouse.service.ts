@@ -8,7 +8,27 @@ import { RotationController } from '../interface/rotation-controller';
 })
 export class MouseService implements RotationController {
   rotationSpeed = 0.005;
-  rotationEnabled: boolean;
+  
+  get rotationEnabled(): boolean {
+    return this._rotationEnabled;
+  }
+
+  set rotationEnabled(enabled: boolean) {
+    if (enabled) {
+      if (!this.pointer) {
+        this.initPointer();
+        this._rotationEnabled = enabled;
+      }
+    } else {
+      this._rotationEnabled = enabled;
+      if (this.pointer) {
+        this.pointer.release();
+        this.pointer.destroy();
+        this.pointer = null;
+      }
+    }
+  }
+
   get rotation(): Deltas {
     const rot = this._rotation;
     this._rotation = {
@@ -24,11 +44,11 @@ export class MouseService implements RotationController {
   private canvas: HTMLCanvasElement;
   private pointer;
   private _rotation: Deltas;
+  private _rotationEnabled: boolean;
 
   constructor() { }
 
   initRotation() {
-    this.rotationEnabled = true;
     this.rotation = {
       dx: 0,
       dy: 0
@@ -39,6 +59,10 @@ export class MouseService implements RotationController {
       //      move to ControlsService
       console.log('Pointer not available. Fallback to keyboard!');
     }
+    this.rotationEnabled = true;
+  }
+
+  private initPointer() {
     this.pointer = pointer(this.canvas);
     this.pointer.on('attain', (movements) => {
       movements.on('data', (move) => {

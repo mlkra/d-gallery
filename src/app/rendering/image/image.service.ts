@@ -71,17 +71,22 @@ export class ImageService {
     return source;
   }
 
+  // TODO refactor?
   downloadImage(url: string, name: string) {
-    fetch(url, {
-      headers: new Headers({
-        'Origin': location.origin
-      }),
-      mode: 'cors'
-    }).then((response) => {
-      return response.blob();
-    }).then((blob) => {
-      const blobUrl = window.URL.createObjectURL(blob);
-      this.downloadUsingAnchor(blobUrl, name);
+    return new Observable<boolean>((observer) => {
+      fetch(url, {
+        headers: new Headers({
+          'Origin': location.origin
+        }),
+        mode: 'cors'
+      }).then((response) => {
+        return response.blob();
+      }).then((blob) => {
+        const blobUrl = window.URL.createObjectURL(blob);
+        this.downloadUsingAnchor(blobUrl, name);
+        observer.next(true);
+        observer.complete();
+      });  
     });
   }
 

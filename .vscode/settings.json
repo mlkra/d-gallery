@@ -2,13 +2,16 @@
     "cSpell.words": [
         "Coord",
         "LANCZOS",
+        "TOREMOVE",
         "chdir",
+        "creds",
         "devkit",
         "iglob",
         "krami",
         "ngsw",
         "nipplejs",
         "polyfills",
-        "prefetch"
+        "prefetch",
+        "signin"
     ]
 }
