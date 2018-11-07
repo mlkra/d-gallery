@@ -69,6 +69,8 @@ export class AuthService {
   }
 
   signOut() {
+    // TODO check if this should be un commented
+    // localStorage.setItem('auth', 'false');
     this.afAuth.auth.signOut().then(() => {
       this.router.navigateByUrl('/');
     });
