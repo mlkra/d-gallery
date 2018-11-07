@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { RenderingService } from '../rendering.service';
 import { Scene } from '../model/scene';
 import { Camera } from '../model/camera';
@@ -15,7 +15,7 @@ const toRadian = glMatrix.toRadian;
   templateUrl: './canvas.component.html',
   styleUrls: ['./canvas.component.css']
 })
-export class CanvasComponent implements OnInit, AfterViewInit {
+export class CanvasComponent implements OnInit, AfterViewInit, OnDestroy {
   noWebGLMessage: string;
   imgSrc: string;
   showModal: boolean = false;
@@ -23,6 +23,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   private gl: WebGLRenderingContext;
   private scene: Scene;
   private camera: Camera;
+  private requestID: number;
 
   constructor(
     private imageService: ImageService,
@@ -58,21 +59,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         0.1,
         100
       );
-      (function (_this) {
-        function loop(timestamp) {
-          // TODO fix
-          let res = _this.controlsService.controlsLoop(_this.scene, _this.camera, timestamp);
-          if (res.download) {
-            _this.showModal = true;
-            _this.storageService.getTexture(res.texture).subscribe((tex) => {
-              _this.imgSrc = tex.image.src;
-            });
-          }
-          _this.renderingService.renderLoop(_this.scene, _this.camera);
-          window.requestAnimationFrame(loop);
-        }
-        window.requestAnimationFrame(loop);
-      })(this);
+      this.startAnimation();
       this.controlsService.init();
     } else {
       setTimeout(() => {
@@ -81,17 +68,42 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     }
   }
 
+  ngOnDestroy() {
+    this.controlsService.disableControls();
+    window.cancelAnimationFrame(this.requestID);
+  }
+
   onToggle(visible: ModalState) {
     console.log('onToggle ', visible);
     switch (visible) {
       case ModalState.VISIBLE:
         this.showModal = true;
         this.controlsService.disableControls();
+        window.cancelAnimationFrame(this.requestID);
         break;
       case ModalState.HIDDEN:
         this.showModal = false;
         this.controlsService.enableControls();
+        this.startAnimation();
         break;
     }
+  }
+
+  private startAnimation() {
+    (function (_this) {
+      function loop(timestamp) {
+        // TODO fix
+        let res = _this.controlsService.controlsLoop(_this.scene, _this.camera, timestamp);
+        if (res.download) {
+          _this.showModal = true;
+          _this.storageService.getTexture(res.texture).subscribe((tex) => {
+            _this.imgSrc = tex.image.src;
+          });
+        }
+        _this.renderingService.renderLoop(_this.scene, _this.camera);
+        _this.requestID = window.requestAnimationFrame(loop);
+      }
+      _this.requestID = window.requestAnimationFrame(loop);
+    })(this);
   }
 }

@@ -12,6 +12,7 @@
         "nipplejs",
         "polyfills",
         "prefetch",
-        "signin"
+        "signin",
+        "signup"
     ]
 }
