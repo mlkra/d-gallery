@@ -53,7 +53,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnDestroy {
         this.scene.images.push(img);
       });
       this.camera = new Camera(
-        vec3.fromValues(0, 0, -2),
+        vec3.fromValues(0, 0, -4),
         toRadian(90),
         canvas.width / canvas.height,
         0.1,

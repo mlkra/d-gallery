@@ -31,9 +31,9 @@ export class ImageService {
       this.textureService.getTextures(gl, count).subscribe((tex) => {
         const localCounter = counter;
         counter += 1;
-        const x = -4.5 + (localCounter % 2) * 3;
+        const x = -1.5 + (localCounter % 2) * 3;
         const y = -1.5 + (Math.trunc(localCounter / 2) % 2) * 3;
-        const z = -4.5 + Math.trunc(localCounter / 4) * 3;
+        const z = -1.5 + Math.trunc(localCounter / 4) * 3;
         const img = new Image(this.positionBuffer, tex, vec3.fromValues(x, y, z), vec3.fromValues(1, 1, 1));
         images.push(img);
         console.log(img);
