@@ -25,6 +25,7 @@ export class AuthGuard implements CanActivate, CanLoad {
     if (this.authService.isSignedIn()) {
       return true;
     } else {
+      // TODO move to toolbar?
       this.router.navigateByUrl('/user/signin');
       return false;
     }
