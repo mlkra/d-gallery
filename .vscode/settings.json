@@ -3,6 +3,7 @@
         "Coord",
         "LANCZOS",
         "TOREMOVE",
+        "Truthy",
         "chdir",
         "creds",
         "devkit",
