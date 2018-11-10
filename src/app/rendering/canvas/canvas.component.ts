@@ -49,7 +49,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnDestroy {
       this.imageService.init(this.gl);
       this.scene = new Scene(this.gl);
       // TODO add parameter
-      this.imageService.getImages(this.gl, 10).subscribe((img) => {
+      this.imageService.getImages(this.gl, 16).subscribe((img) => {
         this.scene.images.push(img);
       });
       this.camera = new Camera(

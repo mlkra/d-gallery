@@ -28,7 +28,7 @@ export class RenderingService {
     this.resizeCanvas(camera);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    this.renderFloor(scene.floor, camera);
+    // this.renderFloor(scene.floor, camera);
     if (scene.images) {
       this.renderImages(scene.images, camera);
     }

@@ -26,29 +26,15 @@ export class ImageService {
 
   getImages(gl: WebGLRenderingContext, count: number) {
     const images: Image[] = [];
+    let counter = 0;
     const source = new Observable<Image>((observer) => {
       this.textureService.getTextures(gl, count).subscribe((tex) => {
-        const x = _.random(-30, 30, true);
-        const z = _.random(-30, 30, true);
-        let tries = 0;
-        while (true) {
-          tries++;
-          let valid = true;
-          for (const image of images) {
-            if ((Math.abs(image.position[0] - x) < 1) && (Math.abs(image.position[2] - z) < 1)) {
-              valid = false;
-              break;
-            }
-          }
-          if (valid) {
-            break;
-          }
-          if (tries > 10000) {
-            console.log('Image not placed right');
-            break;
-          }
-        }
-        const img = new Image(this.positionBuffer, tex, vec3.fromValues(x, 0, z), vec3.fromValues(1, 1, 1));
+        const localCounter = counter;
+        counter += 1;
+        const x = -4.5 + (localCounter % 2) * 3;
+        const y = -1.5 + (Math.trunc(localCounter / 2) % 2) * 3;
+        const z = -4.5 + Math.trunc(localCounter / 4) * 3;
+        const img = new Image(this.positionBuffer, tex, vec3.fromValues(x, y, z), vec3.fromValues(1, 1, 1));
         images.push(img);
         console.log(img);
         observer.next(img);
