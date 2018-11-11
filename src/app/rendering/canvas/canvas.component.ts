@@ -7,6 +7,8 @@ import { ImageService } from '../image/image.service';
 import { ControlsService } from 'src/app/controls/controls.service';
 import { StorageService } from 'src/app/storage/storage.service';
 import { ModalState } from '../download-popup/download-popup.component';
+import { PlacementStrategy } from '../image/placement-strategy';
+import { CubePlacementStrategy } from '../image/cube-placement-strategy';
 
 const toRadian = glMatrix.toRadian;
 
@@ -23,6 +25,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnDestroy {
   private gl: WebGLRenderingContext;
   private scene: Scene;
   private camera: Camera;
+  private placementStrategy: PlacementStrategy;
   private requestID: number;
 
   constructor(
@@ -48,8 +51,12 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnDestroy {
       this.renderingService.init(this.gl);
       this.imageService.init(this.gl);
       this.scene = new Scene(this.gl);
+      // TODO choose placement based on user input
+      this.placementStrategy = new CubePlacementStrategy(16);
       // TODO add parameter
-      this.imageService.getImages(this.gl, 16).subscribe((img) => {
+      this.imageService.getImages(
+        this.gl, this.placementStrategy, 16
+      ).subscribe((img) => {
         this.scene.images.push(img);
       });
       this.camera = new Camera(

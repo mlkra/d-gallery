@@ -4,6 +4,7 @@ import { Image } from '../model/image';
 import { vec3 } from 'gl-matrix';
 import { TextureService } from '../texture/texture.service';
 import * as _ from 'lodash';
+import { PlacementStrategy } from './placement-strategy';
 
 @Injectable({
   providedIn: 'root'
@@ -24,17 +25,20 @@ export class ImageService {
     ]), gl.STATIC_DRAW);
   }
 
-  getImages(gl: WebGLRenderingContext, count: number) {
+  getImages(
+    gl: WebGLRenderingContext,
+    placementStrategy: PlacementStrategy,
+    count: number
+  ) {
     const images: Image[] = [];
-    let counter = 0;
     const source = new Observable<Image>((observer) => {
       this.textureService.getTextures(gl, count).subscribe((tex) => {
-        const localCounter = counter;
-        counter += 1;
-        const x = -1.5 + (localCounter % 2) * 3;
-        const y = -1.5 + (Math.trunc(localCounter / 2) % 2) * 3;
-        const z = -1.5 + Math.trunc(localCounter / 4) * 3;
-        const img = new Image(this.positionBuffer, tex, vec3.fromValues(x, y, z), vec3.fromValues(1, 1, 1));
+        const img = new Image(
+          this.positionBuffer,
+          tex,
+          placementStrategy.getPosition(),
+          vec3.fromValues(1, 1, 1)
+        );
         images.push(img);
         console.log(img);
         observer.next(img);
