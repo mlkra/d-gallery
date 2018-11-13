@@ -52,15 +52,13 @@ export class TextureService {
   }
 
   private fillTexCoordsBuffer(gl: WebGLRenderingContext) {
-    if (!this.texCoordsBuffer) {
-      this.texCoordsBuffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordsBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-        0, 1,
-        1, 1,
-        0, 0,
-        1, 0
-      ]), gl.STATIC_DRAW);
-    }
+    this.texCoordsBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordsBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      0, 1,
+      1, 1,
+      0, 0,
+      1, 0
+    ]), gl.STATIC_DRAW);
   }
 }
