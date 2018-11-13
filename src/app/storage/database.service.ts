@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { pluck, map, take, tap, mergeMap } from 'rxjs/operators';
 import { AngularFireDatabase } from '@angular/fire/database';
 import * as _ from 'lodash';
 
@@ -14,14 +15,25 @@ export class DatabaseService {
   }
 
   getTexPaths(count: number) {
-    const source = new Observable((observer) => {
-      this.items.subscribe((items) => {
-        const paths = _.sampleSize(items, count);
-        observer.next(paths);
-      }, () => {}, () => {
-        observer.complete();
-      });
-    });
-    return source;
+    return this.items.pipe(
+      map((items) => {
+        return _.sampleSize(items, count);
+      }),
+      take(1)
+    );
+  }
+
+  addPath(number: number) {
+    const path = 'img' + (number + 1).toString().padStart(4, '0') + '.jpg';
+    const node = {};
+    node[number] = path;
+    return this.db.object('root/images/' + number).set(path);
+  }
+
+  getNextNumber() {
+    return this.items.pipe(
+      pluck('length'),
+      take(1)
+    );
   }
 }

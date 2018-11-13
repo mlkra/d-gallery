@@ -5,6 +5,7 @@ import { vec3 } from 'gl-matrix';
 import { TextureService } from '../texture/texture.service';
 import * as _ from 'lodash';
 import { PlacementStrategy } from './placement-strategy';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -30,35 +31,29 @@ export class ImageService {
     placementStrategy: PlacementStrategy,
     count: number
   ) {
-    const images: Image[] = [];
-    const source = new Observable<Image>((observer) => {
-      this.textureService.getTextures(gl, count).subscribe((tex) => {
+    return this.textureService.getTextures(gl, count).pipe(
+      map((tex) => {
         const img = new Image(
           this.positionBuffer,
           tex,
           placementStrategy.getPosition(),
           vec3.fromValues(1, 1, 1)
         );
-        images.push(img);
         console.log(img);
-        observer.next(img);
-      }, () => {}, () => {
-        observer.complete();
-      });
-    });
-    return source;
+        return img;
+      })
+    );
   }
 
   getImage(gl: WebGLRenderingContext, image: Image) {
-    const source = new Observable<Image>((observer) => {
-      this.textureService.getTexture(gl, image.texture).subscribe((tex) => {
-        const img = new Image(this.positionBuffer, tex, vec3.create(), vec3.fromValues(1, 1, 1));
-        observer.next(img);
-      }, () => {}, () => {
-        observer.complete();
-      });
-    });
-    return source;
+    return this.textureService.getTexture(gl, image.texture).pipe(
+      map((tex) => {
+        const img = new Image(
+          this.positionBuffer, tex, vec3.create(), vec3.fromValues(1, 1, 1)
+        );
+        return img;
+      })
+    );
   }
 
   // TODO refactor?
