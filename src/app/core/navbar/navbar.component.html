@@ -1,5 +1,10 @@
 <nav class="navbar navbar-expand-sm navbar-light bg-light">
   <a class="navbar-brand" routerLink="/home">Home</a>
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a [class.active]="isUploadActive" class="nav-link" routerLink="/upload">Upload</a>
+    </li>
+  </ul>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
     <span class="navbar-toggler-icon"></span>
   </button>

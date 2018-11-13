@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { SpinnerComponent } from './spinner/spinner.component';
 
 @NgModule({
   imports: [
@@ -12,8 +13,9 @@ import { RouterModule } from '@angular/router';
   exports: [
     CommonModule,
     FormsModule,
-    RouterModule
+    RouterModule,
+    SpinnerComponent
   ],
-  declarations: []
+  declarations: [SpinnerComponent]
 })
 export class SharedModule { }

@@ -11,6 +11,7 @@ import { AuthService } from '../../auth/auth.service';
 export class NavbarComponent implements OnInit {
   isSignInActive: boolean;
   isSignUpActive: boolean;
+  isUploadActive: boolean;
 
   constructor(
     private location: Location,
@@ -22,9 +23,15 @@ export class NavbarComponent implements OnInit {
     if (this.location.path() === '/user/signin') {
       this.isSignInActive = false;
       this.isSignUpActive = true;
+      this.isUploadActive = false;
     } else {
       this.isSignInActive = true;
       this.isSignUpActive = false;
+      if (this.location.path() === '/upload') {
+        this.isUploadActive = false;
+      } else {
+        this.isUploadActive = true;
+      }
     }
     this.router.events.forEach((event) => {
       if (event instanceof NavigationEnd) {
@@ -34,6 +41,11 @@ export class NavbarComponent implements OnInit {
         } else {
           this.isSignInActive = true;
           this.isSignUpActive = false;
+          if (this.location.path() === '/upload') {
+            this.isUploadActive = false;
+          } else {
+            this.isUploadActive = true;
+          }
         }
       }
     });
