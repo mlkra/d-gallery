@@ -112,17 +112,6 @@ export class ControlsService {
     }
   }
 
-  private startDownload2(scene: Scene, camera: Camera) {
-    const image = scene.intersect(camera.getRay());
-    if (image) {
-      console.log('downloading: ', image.texture.path);
-      // TODO delegate download somewhere (popup component?)
-      this.storageService.getTexture(image.texture).subscribe((tex) => {
-        this.imageService.downloadImage(tex.image.src, 'texture.jpg');
-      });
-    }
-  }
-
   private startDownload(scene: Scene, camera: Camera) {
     const image = scene.intersect(camera.getRay());
     return image;

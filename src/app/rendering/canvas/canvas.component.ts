@@ -52,10 +52,10 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnDestroy {
       this.imageService.init(this.gl);
       this.scene = new Scene(this.gl);
       // TODO choose placement based on user input
-      this.placementStrategy = new CubePlacementStrategy(16);
+      this.placementStrategy = new CubePlacementStrategy(32);
       // TODO add parameter
       this.imageService.getImages(
-        this.gl, this.placementStrategy, 16
+        this.gl, this.placementStrategy, 32
       ).subscribe((img) => {
         this.scene.images.push(img);
       });
@@ -99,12 +99,11 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnDestroy {
   private startAnimation() {
     (function (_this) {
       function loop(timestamp) {
-        // TODO fix
         let res = _this.controlsService.controlsLoop(_this.scene, _this.camera, timestamp);
         if (res.download) {
           _this.showModal = true;
-          _this.storageService.getTexture(res.texture).subscribe((tex) => {
-            _this.imgSrc = tex.image.src;
+          _this.storageService.getImageURL(res.texture).subscribe((url) => {
+            _this.imgSrc = url;
           });
         }
         _this.renderingService.renderLoop(_this.scene, _this.camera);

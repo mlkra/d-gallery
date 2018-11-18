@@ -37,7 +37,7 @@ export class ImageService {
           this.positionBuffer,
           tex,
           placementStrategy.getPosition(),
-          vec3.fromValues(1, 1, 1)
+          vec3.fromValues(2, 2, 2)
         );
         console.log(img);
         return img;

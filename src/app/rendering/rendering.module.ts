@@ -5,12 +5,14 @@ import { RenderingRoutingModule } from './rendering-routing.module';
 import { CanvasComponent } from './canvas/canvas.component';
 import { ControlsModule } from '../controls/controls.module';
 import { DownloadPopupComponent } from './download-popup/download-popup.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     RenderingRoutingModule,
-    ControlsModule
+    ControlsModule,
+    SharedModule
   ],
   declarations: [CanvasComponent, DownloadPopupComponent]
 })

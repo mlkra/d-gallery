@@ -14,7 +14,16 @@ export enum ModalState {
   styleUrls: ['./download-popup.component.css']
 })
 export class DownloadPopupComponent implements OnInit, AfterViewInit {
-  @Input() src: string;
+  @Input() set src(src: string) {
+    if (this._src !== src) {
+      this.showSpinner = true
+      this._src = src;
+    }
+  }
+
+  get src() {
+    return this._src;
+  }
 
   @Input() 
   set show(show: boolean) {
@@ -29,6 +38,9 @@ export class DownloadPopupComponent implements OnInit, AfterViewInit {
   @Output('toggled')
   toggledEmitter: EventEmitter<ModalState> = new EventEmitter<ModalState>();
 
+  showSpinner: boolean;
+
+  private _src: string;
   private _show: boolean;
 
   constructor(private imageService: ImageService) { }
@@ -51,6 +63,10 @@ export class DownloadPopupComponent implements OnInit, AfterViewInit {
         $('#app-modal').modal('hide');
       }
     });
+  }
+
+  imgLoaded() {
+    this.showSpinner = false;
   }
 
   private __show(show: boolean) {

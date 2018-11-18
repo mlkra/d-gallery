@@ -55,6 +55,11 @@ export class StorageService {
     );
   }
 
+  getImageURL(texture: Texture) {
+    const path = 'img/' + texture.path.substr(6);
+    return this.storage.ref(path).getDownloadURL();
+  }
+
   getTexture(texture: Texture) {
     const path = 'img/' + texture.path.substr(6);
     return this.storage.ref(path).getDownloadURL().pipe(

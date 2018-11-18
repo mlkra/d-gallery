@@ -2,7 +2,8 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-body">
-        <img src="{{src}}"/>
+        <img [hidden]="showSpinner" src="{{src}}" (load)="imgLoaded();"/>
+        <app-spinner *ngIf="showSpinner;"></app-spinner>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="this.show = false;">Close</button>

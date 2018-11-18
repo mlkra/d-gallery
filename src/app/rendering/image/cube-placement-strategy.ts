@@ -12,9 +12,9 @@ export class CubePlacementStrategy implements PlacementStrategy {
         }
         const localCounter = this.counter;
         this.counter += 1;
-        const x = -1.5 + (localCounter % 2) * 3;
-        const y = -1.5 + (Math.trunc(localCounter / 2) % 2) * 3;
-        const z = -1.5 + Math.trunc(localCounter / 4) * 3;
+        const x = -6.05 + (localCounter % 4) * 4.05;
+        const y = -2 + (Math.trunc(localCounter / 4) % 2) * 4.05;
+        const z = -2 + Math.trunc(localCounter / 8) * 6;
         return vec3.fromValues(x, y, z);
     }
 }
