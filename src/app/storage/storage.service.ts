@@ -5,6 +5,8 @@ import { Observable, fromEvent, of } from 'rxjs';
 import { Texture } from '../rendering/model/texture';
 import { map, concatMap, tap, mergeMap, switchMap } from 'rxjs/operators';
 
+declare var Caman: any;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -78,14 +80,13 @@ export class StorageService {
           img.addEventListener('load', () => {
             observer.next(tex);
             observer.complete();
-          })
+          });
           img.src = value.url;
         });
       })
     );
   }
 
-  // TODO add cropping, resizing
   uploadImage(file: File) {
     return this.dbService.getNextNumber().pipe(
       map((value: number) => {
@@ -93,7 +94,80 @@ export class StorageService {
         return imgName;
       }),
       concatMap((value) => {
-        return this.storage.upload('uploadTest/' + value, file);
+        return new Observable<{}>((observer) => {
+          const img = new Image();
+          img.addEventListener('load', () => {
+            const div = document.createElement('div');
+            const canvas = document.createElement('canvas');
+            div.appendChild(canvas);
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            observer.next({
+              value: value,
+              div: div,
+              canvas: canvas
+            });
+            observer.complete();
+          });
+          img.src = URL.createObjectURL(file);
+        });
+      }),
+      concatMap((obj) => {
+        return new Observable<{}>((observer) => {
+          Caman(obj['canvas'], function () {
+            if (obj['canvas'].width > obj['canvas'].height) {
+              this.resize({
+                height: 1024
+              });
+            } else {
+              this.resize({
+                width: 1024
+              });
+            }
+            this.crop(1024, 1024);
+            this.render();
+            obj['canvas'] = obj['div'].querySelector('canvas');
+            observer.next(obj),
+            observer.complete();
+          });
+        })
+      }),
+      concatMap((obj) => {
+        return new Observable<{}>((observer) => {
+          obj['canvas'].toBlob((blob) => {
+            obj['blob'] = blob;
+            observer.next(obj);
+            observer.complete();
+          }, 'image/jpeg');
+        });
+      }),
+      concatMap((obj) => {
+        return new Observable<{}>((observer) => {
+          Caman(obj['canvas'], function() {
+            this.resize({
+              width: 256
+            });
+            this.render();
+            obj['canvas'] = obj['div'].querySelector('canvas');
+            observer.next(obj),
+            observer.complete();
+          });
+        });
+      }),
+      concatMap((obj) => {
+        return new Observable<{}>((observer) => {
+          obj['canvas'].toBlob((blob) => {
+            obj['blob2'] = blob
+            observer.next(obj);
+            observer.complete();
+          }, 'image/jpeg');
+        })
+      }),
+      concatMap((obj) => {
+        this.storage.upload('thumb/' + obj['value'], obj['blob2'])
+        return this.storage.upload('img/' + obj['value'], obj['blob']);
       }),
       concatMap((value) => {
         const number = parseInt(value.metadata.name.substr(3, 4));

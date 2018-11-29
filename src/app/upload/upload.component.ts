@@ -38,8 +38,9 @@ export class UploadComponent implements OnInit, AfterViewInit {
     this.storageService.uploadImage(file).subscribe(() => {
       this.showSpinner = false;
       this.uploadResult = 'Success!';
-    }, () => {
+    }, (err) => {
       this.showSpinner = false;
+      console.log(err);
       this.uploadResult = 'Error!';
     });
   }

@@ -8,4 +8,4 @@ def generate_json(path, startIt, endIt):
     f.close()
 
 
-generate_json(r'D:\Users\krami\Documents\Git\d-gallery\firebase-database.json', 1, 25)
+generate_json(r'D:\Users\krami\Documents\Git\d-gallery\firebase-database.json', 1, 85)
