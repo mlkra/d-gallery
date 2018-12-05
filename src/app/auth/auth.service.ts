@@ -19,8 +19,6 @@ export class AuthService {
       if (user) {
         this.userDetails = user;
         localStorage.setItem('auth', 'true');
-        // TOREMOVE for debug
-        console.log(this.userDetails);
       } else {
         this.userDetails = null;
         localStorage.setItem('auth', 'false');
@@ -69,10 +67,9 @@ export class AuthService {
   }
 
   signOut() {
-    // TODO check if this should be un commented
-    // localStorage.setItem('auth', 'false');
+    localStorage.setItem('auth', 'false');
     this.afAuth.auth.signOut().then(() => {
-      this.router.navigateByUrl('/');
+      this.router.navigateByUrl('/user/signin');
     });
   }
 }
