@@ -26,9 +26,7 @@ export class ControlsService {
     private joystickService: JoystickService,
     private keyboardService: KeyboardService,
     private mouseService: MouseService,
-    private triggerButtonService: TriggerButtonService,
-    private storageService: StorageService,
-    private imageService: ImageService
+    private triggerButtonService: TriggerButtonService
   ) { }
 
   init() {
