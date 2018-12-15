@@ -2,7 +2,7 @@
   <div class="form-row mt-2">
     <div class="col-md-3"></div>
     <div class="col-md-3">
-      <form #loginForm="ngForm">
+      <form id="app-login-form" #loginForm="ngForm">
         <div class="form-group">
           <label for="app-input-email">Email address</label>
           <input [(ngModel)]="model.email" type="email" class="form-control" id="app-input-email" name="email" placeholder="Enter email">
@@ -12,7 +12,7 @@
           <input [(ngModel)]="model.password" type="password" class="form-control" id="app-input-password" name="password" placeholder="Password">
         </div>
         <a routerLink="/user/signup" class="btn btn-primary">Sign Up</a>
-        <button type="button" class="btn btn-primary float-right" (click)="signInWithEmail()">Sign In</button>
+        <button id="app-signin-button" type="button" class="btn btn-primary float-right" (click)="signInWithEmail()">Sign In</button>
       </form>
     </div>
     <div class="col-md-3 text-center">

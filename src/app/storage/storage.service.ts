@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { DatabaseService } from './database.service';
 import { AngularFireStorage } from '@angular/fire/storage';
-import { Observable, fromEvent, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Texture } from '../rendering/model/texture';
-import { map, concatMap, tap, mergeMap, switchMap } from 'rxjs/operators';
+import { map, concatMap, mergeMap, switchMap } from 'rxjs/operators';
 
 declare var Caman: any;
 

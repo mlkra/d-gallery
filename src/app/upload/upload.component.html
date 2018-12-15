@@ -7,13 +7,13 @@
           <label class="custom-file-label" for="app-file-input">{{ this.currentFile ? this.currentFile : 'Choose file' }}</label>
         </div>
         <div class="input-group-append">
-          <button [disabled]="showSpinner" (click)="uploadFile();" class="input-group-text">Upload</button>
+          <button [disabled]="showSpinner" (click)="uploadFile();" class="input-group-text" id="app-upload-button">Upload</button>
         </div>
       </div>
     </div>
   </div>
   <div class="mt-5 text-center">
-    <h3 *ngIf="uploadResult">{{ uploadResult }}</h3>
-    <app-spinner *ngIf="showSpinner"></app-spinner>
+    <h3 *ngIf="uploadResult" id="app-result">{{ uploadResult }}</h3>
+    <app-spinner *ngIf="showSpinner" id="app-spinner"></app-spinner>
   </div>
 </div>

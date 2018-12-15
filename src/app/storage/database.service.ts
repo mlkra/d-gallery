@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { pluck, map, take, tap, mergeMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { pluck, map, take } from 'rxjs/operators';
 import { AngularFireDatabase } from '@angular/fire/database';
 import * as _ from 'lodash';
 

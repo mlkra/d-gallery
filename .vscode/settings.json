@@ -17,6 +17,7 @@
         "polyfills",
         "prefetch",
         "signin",
-        "signup"
+        "signup",
+        "testtest"
     ]
 }
