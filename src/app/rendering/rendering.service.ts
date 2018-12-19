@@ -5,12 +5,14 @@ import { Scene } from './model/scene';
 import { Camera } from './model/camera';
 import { Floor } from './model/floor';
 import { Image } from './model/image';
+import { Crosshair } from './model/crosshair';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RenderingService {
   private gl: WebGLRenderingContext;
+  private crosshair: Crosshair;
 
   constructor(private shaderService: ShaderService) { }
 
@@ -21,6 +23,7 @@ export class RenderingService {
     // gl.cullFace(gl.FRONT);
     gl.enable(gl.DEPTH_TEST);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    this.crosshair = new Crosshair(gl);
   }
 
   renderLoop(scene: Scene, camera: Camera) {
@@ -32,6 +35,7 @@ export class RenderingService {
     if (scene.images) {
       this.renderImages(scene.images, camera);
     }
+    this.renderCrosshair(this.crosshair, camera);
     gl.flush();
   }
 
@@ -69,6 +73,35 @@ export class RenderingService {
     );
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.disableVertexAttribArray(wrapper.positionAttribLocation);
+  }
+
+  private renderCrosshair(crosshair: Crosshair, camera: Camera) {
+    const gl = this.gl;
+    gl.disable(gl.DEPTH_TEST);
+    const wrapper = this.shaderService.colorProgramWrapper;
+    gl.useProgram(wrapper.program);
+    gl.bindBuffer(gl.ARRAY_BUFFER, crosshair.positionBuffer);
+    gl.enableVertexAttribArray(wrapper.positionAttribLocation);
+    gl.vertexAttribPointer(
+      wrapper.positionAttribLocation,
+      3,
+      gl.FLOAT,
+      false,
+      0,
+      0
+    );
+    gl.uniformMatrix4fv(
+      wrapper.modelViewProjectionUniformLocation,
+      false,
+      camera.projectionMatrix
+    );
+    gl.uniform4f(
+      wrapper.colorUniformLocation,
+      0, 0, 0, 1.0
+    );
+    gl.drawArrays(gl.LINES, 0, 4);
+    gl.disableVertexAttribArray(wrapper.positionAttribLocation);
+    gl.enable(gl.DEPTH_TEST);
   }
 
   private renderImages(images: Image[], camera: Camera) {
