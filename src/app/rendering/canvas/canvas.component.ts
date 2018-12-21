@@ -48,14 +48,15 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.gl = canvas.getContext('webgl');
     if (this.gl) {
+      const imagesCount = 64;
       this.renderingService.init(this.gl);
       this.imageService.init(this.gl);
       this.scene = new Scene(this.gl);
       // TODO choose placement based on user input
-      this.placementStrategy = new CubePlacementStrategy(32);
+      this.placementStrategy = new CubePlacementStrategy(imagesCount);
       // TODO add parameter
       this.imageService.getImages(
-        this.gl, this.placementStrategy, 32
+        this.gl, this.placementStrategy, imagesCount
       ).subscribe((img) => {
         this.scene.images.push(img);
       });
