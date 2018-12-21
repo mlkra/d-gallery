@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 })
 export class SignUpComponent implements OnInit {
   model = new Credentials();
+  errorMessage: String;
 
   constructor(private authService: AuthService, private router: Router, private ngZone: NgZone) { }
 
@@ -21,7 +22,14 @@ export class SignUpComponent implements OnInit {
     this.authService.signUpWithEmail(this.model).then((res) => {
       console.log(res);
       this.redirectHome();
+    }).catch((e) => {
+      this.handleError(e);
     });
+  }
+
+  private handleError(e: Error) {
+    this.errorMessage = e.message;
+    console.log(e);
   }
 
   // TODO implement and use

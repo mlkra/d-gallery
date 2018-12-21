@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 })
 export class SignInComponent implements OnInit {
   model = new Credentials();
+  errorMessage: String;
 
   constructor(private authService: AuthService, private router: Router, private ngZone: NgZone) { }
 
@@ -20,6 +21,8 @@ export class SignInComponent implements OnInit {
     this.authService.signInWithEmail(this.model).then((res) => {
       console.log(res);
       this.redirectHome();
+    }).catch((e) => {
+      this.handleError(e);
     });
   }
 
@@ -27,6 +30,8 @@ export class SignInComponent implements OnInit {
     this.authService.signInWithGoogle().then((res) => {
       console.log(res);
       this.redirectHome();
+    }).catch((e) => {
+      this.handleError(e);
     });
   }
 
@@ -34,6 +39,8 @@ export class SignInComponent implements OnInit {
     this.authService.signInWithFacebook().then((res) => {
       console.log(res);
       this.redirectHome();
+    }).catch((e) => {
+      this.handleError(e);
     });
   }
 
@@ -41,7 +48,14 @@ export class SignInComponent implements OnInit {
     this.authService.signInWithGithub().then((res) => {
       console.log(res);
       this.redirectHome();
+    }).catch((e) => {
+      this.handleError(e);
     });
+  }
+
+  private handleError(e: Error) {
+    this.errorMessage = e.message;
+    console.log(e);
   }
 
   // TODO implement and use (in catch)
