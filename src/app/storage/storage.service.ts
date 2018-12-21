@@ -167,11 +167,23 @@ export class StorageService {
       }),
       concatMap((obj) => {
         this.storage.upload('thumb/' + obj['value'], obj['blob2'])
-        return this.storage.upload('img/' + obj['value'], obj['blob']);
+        return new Observable<any>((observer) => {
+          this.storage.upload('img/' + obj['value'], obj['blob']).
+            then((ret) => {
+              obj['task'] = ret;
+              observer.next(obj);
+              observer.complete();
+          });
+        });
       }),
-      concatMap((value) => {
-        const number = parseInt(value.metadata.name.substr(3, 4));
-        return this.dbService.addPath(number - 1);
+      concatMap((obj) => {
+        const number = parseInt(obj['task'].metadata.name.substr(3, 4));
+        return new Observable<any>((observer) => {
+          this.dbService.addPath(number - 1).then(() => {
+            observer.next(obj);
+            observer.complete();
+          });
+        });
       })
     );
   }

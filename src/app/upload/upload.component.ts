@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { StorageService } from '../storage/storage.service';
+import { fromEvent } from 'rxjs';
 
 @Component({
   selector: 'app-upload',
@@ -10,6 +11,7 @@ export class UploadComponent implements OnInit, AfterViewInit {
   currentFile: String;
   showSpinner: boolean;
   uploadResult: string;
+  imgSrc: String;
 
   private fileInput: HTMLInputElement;
 
@@ -35,7 +37,14 @@ export class UploadComponent implements OnInit, AfterViewInit {
     // TODO handle errors
     this.showSpinner = true;
     this.uploadResult = null;
-    this.storageService.uploadImage(file).subscribe(() => {
+    this.storageService.uploadImage(file).subscribe((obj) => {
+      console.log(obj);
+      const fileReader = new FileReader();
+      const obs = fromEvent(fileReader, 'load');
+      obs.subscribe((ev) => {
+        this.imgSrc = ev.target['result'];
+      });
+      fileReader.readAsDataURL(obj.blob);
       this.showSpinner = false;
       this.uploadResult = 'Success!';
     }, (err) => {
