@@ -11,9 +11,10 @@
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
     <span class="navbar-toggler-icon"></span>
   </button>
-
+  
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav ml-auto">
+        <button *ngIf="isHomeActive" (click)="controlsInfo()" class="btn btn-info mr-4">?</button>
       <ng-container *ngIf="!isSignedIn() else appSignOut">
         <li class="nav-item">
           <a [class.active]="isSignInActive" class="nav-link" routerLink="/user/signin">Sign In</a>
@@ -30,3 +31,26 @@
     </ul>
   </div>
 </nav>
+
+<div id="app-modal2" tabIndex="-1" class="modal autoModal" role="dialog">
+    <div class="modal-dialog modal-md autoModal" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <h3 class="mb-5">Controls:</h3>
+          <ul *ngIf="!isTouch()">
+            <li><h5>use wsad to move camera</h5></li>
+            <li><h5>use mouse to rotate camera</h5></li>
+            <li><h5>use space to select image</h5></li>
+          </ul>
+          <ul *ngIf="isTouch()">
+            <li><h5>use left joystick to move camera</h5></li>
+            <li><h5>use right joystick to rotate camera</h5></li>
+            <li><h5>use button to select image</h5></li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="hideInfo()">Close</button>
+          </div>
+      </div>
+    </div>
+  </div>

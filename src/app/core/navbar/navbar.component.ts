@@ -3,6 +3,8 @@ import { Location } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 
+declare var $: any;
+
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -70,5 +72,21 @@ export class NavbarComponent implements OnInit {
 
   refresh() {
     this.router.navigateByUrl('/home');
+  }
+
+  controlsInfo() {
+    $('#app-modal2').modal('show');
+  }
+
+  hideInfo() {
+    $('#app-modal2').modal('hide');
+  }
+
+  isTouch() {
+    if ('ontouchstart' in document.documentElement) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
