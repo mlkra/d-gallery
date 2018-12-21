@@ -4,6 +4,9 @@
     <li class="nav-item">
       <a [class.active]="isUploadActive" class="nav-link" routerLink="/upload">Upload</a>
     </li>
+    <li class="nav-item" *ngIf="isHomeActive">
+      <a href="#" (click)="refresh();" class="nav-link active">Refresh images</a>
+    </li>
   </ul>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
     <span class="navbar-toggler-icon"></span>

@@ -12,6 +12,7 @@ export class NavbarComponent implements OnInit {
   isSignInActive: boolean;
   isSignUpActive: boolean;
   isUploadActive: boolean;
+  isHomeActive: boolean;
 
   constructor(
     private location: Location,
@@ -24,13 +25,16 @@ export class NavbarComponent implements OnInit {
       this.isSignInActive = false;
       this.isSignUpActive = true;
       this.isUploadActive = false;
+      this.isHomeActive = false;
     } else {
       this.isSignInActive = true;
       this.isSignUpActive = false;
       if (this.location.path() === '/upload') {
         this.isUploadActive = false;
+        this.isHomeActive = false;
       } else {
         this.isUploadActive = true;
+        this.isHomeActive = true;
       }
     }
     this.router.events.forEach((event) => {
@@ -38,9 +42,14 @@ export class NavbarComponent implements OnInit {
         if (event.urlAfterRedirects === '/user/signin') {
           this.isSignInActive = false;
           this.isSignUpActive = true;
+          this.isHomeActive = false;
         } else {
           this.isSignInActive = true;
           this.isSignUpActive = false;
+          this.isHomeActive = false;
+          if (this.location.path() === '/home') {
+            this.isHomeActive = true;
+          }
           if (this.location.path() === '/upload') {
             this.isUploadActive = false;
           } else {
@@ -57,5 +66,9 @@ export class NavbarComponent implements OnInit {
 
   signOut() {
     this.authService.signOut();
+  }
+
+  refresh() {
+    this.router.navigateByUrl('/home');
   }
 }
