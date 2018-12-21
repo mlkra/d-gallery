@@ -67,7 +67,6 @@ export class MouseService implements RotationController {
     this.pointer.on('attain', (movements) => {
       movements.on('data', (move) => {
         if (this.rotationEnabled) {
-          console.log(move);
           this.rotation = {
             dx: move.dx,
             dy: -move.dy
@@ -93,7 +92,6 @@ export class MouseService implements RotationController {
     this.pointer.on('attain', (movements) => {
       movements.on('data', (move) => {
         if (this.rotationEnabled) {
-          console.log(move);
           this.rotation = {
             dx: move.dx,
             dy: -move.dy
