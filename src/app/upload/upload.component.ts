@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { StorageService } from '../storage/storage.service';
 import { fromEvent } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-upload',
@@ -15,7 +16,10 @@ export class UploadComponent implements OnInit, AfterViewInit {
 
   private fileInput: HTMLInputElement;
 
-  constructor(private storageService: StorageService) { }
+  constructor(
+    private storageService: StorageService,
+    private router: Router
+  ) { }
 
   ngOnInit() {
   }
@@ -42,6 +46,8 @@ export class UploadComponent implements OnInit, AfterViewInit {
       const fileReader = new FileReader();
       const obs = fromEvent(fileReader, 'load');
       obs.subscribe((ev) => {
+        sessionStorage.setItem('uri', ev.target['result']);
+        sessionStorage.setItem('path', obj.path);
         this.imgSrc = ev.target['result'];
       });
       fileReader.readAsDataURL(obj.blob);
@@ -52,5 +58,9 @@ export class UploadComponent implements OnInit, AfterViewInit {
       console.log(err);
       this.uploadResult = 'Error!';
     });
+  }
+
+  navigateToHome() {
+    this.router.navigateByUrl('/home');
   }
 }

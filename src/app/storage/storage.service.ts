@@ -166,13 +166,15 @@ export class StorageService {
         })
       }),
       concatMap((obj) => {
-        this.storage.upload('thumb/' + obj['value'], obj['blob2'])
         return new Observable<any>((observer) => {
-          this.storage.upload('img/' + obj['value'], obj['blob']).
-            then((ret) => {
-              obj['task'] = ret;
-              observer.next(obj);
-              observer.complete();
+          obj['path'] = 'thumb/' + obj['value'];
+          this.storage.upload('thumb/' + obj['value'], obj['blob2']).then(() => {
+            this.storage.upload('img/' + obj['value'], obj['blob']).
+              then((ret) => {
+                obj['task'] = ret;
+                observer.next(obj);
+                observer.complete();
+            });
           });
         });
       }),

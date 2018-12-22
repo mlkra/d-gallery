@@ -9,6 +9,8 @@ import { StorageService } from 'src/app/storage/storage.service';
 import { ModalState } from '../download-popup/download-popup.component';
 import { PlacementStrategy } from '../image/placement-strategy';
 import { CubePlacementStrategy } from '../image/cube-placement-strategy';
+import { TextureService } from '../texture/texture.service';
+import { fromEvent } from 'rxjs';
 
 const toRadian = glMatrix.toRadian;
 
@@ -31,6 +33,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private imageService: ImageService,
     private storageService: StorageService,
+    private textureService: TextureService,
     private controlsService: ControlsService,
     private renderingService: RenderingService
   ) { }
@@ -59,6 +62,17 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnDestroy {
         this.gl, this.placementStrategy, imagesCount
       ).subscribe((img) => {
         this.scene.images.push(img);
+      }, () => {}, () => {
+        const src = sessionStorage.getItem('uri');
+        if (src) {
+          const img = new Image();
+          fromEvent(img, 'load').subscribe(() => {
+            const path = sessionStorage.getItem('path');
+            const tex = this.textureService.getTextureFromImgElement(this.gl, img, path);
+            this.scene.images[6].texture = tex;
+          });
+          img.src = src;
+        }
       });
       this.camera = new Camera(
         vec3.fromValues(0, 0, -4),

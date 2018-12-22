@@ -9,6 +9,9 @@
         <div class="input-group-append">
           <button [disabled]="showSpinner" (click)="uploadFile();" class="input-group-text" id="app-upload-button">Upload</button>
         </div>
+        <div class="input-group-append">
+          <button (click)="navigateToHome()" *ngIf="uploadResult === 'Success!'" class="input-group-text ml-5">See new image in gallery</button>
+        </div>
       </div>
     </div>
   </div>
