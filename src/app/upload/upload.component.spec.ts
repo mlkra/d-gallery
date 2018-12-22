@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { UploadComponent } from './upload.component';
 import { SharedModule } from '../shared/shared.module';
 import { StorageService } from '../storage/storage.service';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('UploadComponent', () => {
   let component: UploadComponent;
@@ -13,7 +14,8 @@ describe('UploadComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        SharedModule
+        SharedModule,
+        RouterTestingModule
       ],
       declarations: [ UploadComponent ],
       providers: [
