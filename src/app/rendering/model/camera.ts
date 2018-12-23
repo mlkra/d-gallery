@@ -14,6 +14,10 @@ export class Camera {
     // TODO reset to 0?
     private yaw = 90;
     private pitch = 0;
+    private box = {
+        min: vec3.fromValues(-15, -15, -15),
+        max: vec3.fromValues(20, 20, 30),
+    };
 
     constructor(
         private eye: vec3,
@@ -73,9 +77,26 @@ export class Camera {
     }
 
     private move(vecStep: vec3, step: number) {
-        vec3.scaleAndAdd(this.eye, this.eye, vecStep, step);
-        vec3.scaleAndAdd(this.center, this.center, vecStep, step);
-        mat4.lookAt(this.viewMatrix, this.eye, this.center, this.up);
+        const e = vec3.create();
+        const c = vec3.create();
+        vec3.scaleAndAdd(e, this.eye, vecStep, step);
+        vec3.scaleAndAdd(c, this.center, vecStep, step);
+        if (this.checkValid(e)) {
+            this.eye = e;
+            this.center = c;
+            mat4.lookAt(this.viewMatrix, this.eye, this.center, this.up);
+        }
+    }
+
+    private checkValid(e: vec3) {
+        const mi = this.box.min;
+        const ma = this.box.max;
+        if (e[0] < mi[0] || e[1] < mi[1] || e[2] < mi[2] ||
+            e[0] > ma[0] || e[1] > ma[1] || e[2] > ma[2]) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private calculateViewMatrix() {
