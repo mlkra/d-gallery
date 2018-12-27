@@ -37,6 +37,10 @@ export class NavbarComponent implements OnInit {
       } else {
         this.isUploadActive = true;
         this.isHomeActive = true;
+        if (localStorage.getItem('firstRun') === null) {
+          localStorage.setItem('firstRun', 'true');
+          this.controlsInfo();
+        }
       }
     }
     this.router.events.forEach((event) => {
@@ -51,6 +55,10 @@ export class NavbarComponent implements OnInit {
           this.isHomeActive = false;
           if (this.location.path() === '/home') {
             this.isHomeActive = true;
+            if (localStorage.getItem('firstRun') === null) {
+              localStorage.setItem('firstRun', 'true');
+              this.controlsInfo();
+            }
           }
           if (this.location.path() === '/upload') {
             this.isUploadActive = false;
