@@ -1,0 +1,10 @@
+button {
+    display: block;
+    margin: auto;
+}
+
+div {
+    position: absolute;
+    bottom: 0%;
+    width: 100%;
+}

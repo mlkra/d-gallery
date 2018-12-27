@@ -9,6 +9,7 @@ import { RotationController } from './interface/rotation-controller';
 import { TriggerController } from './interface/trigger-controller';
 import * as pointer from 'pointer-lock';
 import { TriggerButtonService } from './service/trigger-button.service';
+import { CameraButtonsService } from './service/camera-buttons.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class ControlsService {
     private joystickService: JoystickService,
     private keyboardService: KeyboardService,
     private mouseService: MouseService,
-    private triggerButtonService: TriggerButtonService
+    private triggerButtonService: TriggerButtonService,
+    private cameraButtonsService: CameraButtonsService
   ) { }
 
   init() {
@@ -38,10 +40,12 @@ export class ControlsService {
       this.triggerControllers.push(this.keyboardService);
     } else if ('ontouchstart' in document.documentElement) {
       this.movementControllers.push(this.joystickService);
+      this.movementControllers.push(this.cameraButtonsService);
       this.rotationControllers.push(this.joystickService);
       this.triggerControllers.push(this.triggerButtonService);
     } else {
       this.movementControllers.push(this.keyboardService);
+      this.movementControllers.push(this.cameraButtonsService);
       this.rotationControllers.push(this.keyboardService);
       this.triggerControllers.push(this.keyboardService);
     }
@@ -113,6 +117,9 @@ export class ControlsService {
       }
       if (movement.dz !== 0) {
         camera.moveY(movement.dz * speed * time);
+        if (mC instanceof CameraButtonsService) {
+          mC.movement.dz = 0;
+        }
       }
       if (movement.dy !== 0) {
         camera.moveZ(movement.dy * speed * time);

@@ -1,4 +1,5 @@
 <canvas *ngIf="!noWebGLMessage" id="app-canvas">Your browser does not support canvas element!</canvas>
 <p *ngIf="noWebGLMessage">{{ noWebGLMessage }}</p>
 <app-trigger-button></app-trigger-button>
+<app-camera-buttons></app-camera-buttons>
 <app-download-popup [src]="imgSrc" [show]="showModal" (toggled)="onToggle($event)"></app-download-popup>
