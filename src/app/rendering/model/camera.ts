@@ -47,6 +47,12 @@ export class Camera {
         this.move(vecStep, step);
     }
 
+    moveY(step: number) {
+        const vecStep = vec3.clone(this.up);
+        vec3.normalize(vecStep, vecStep);
+        this.move(vecStep, step);
+    }
+
     moveZ(step: number) {
         const vecStep = vec3.clone(this.front);
         vecStep[1] = 0;

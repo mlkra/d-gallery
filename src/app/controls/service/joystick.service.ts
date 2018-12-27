@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as nipplejs from 'nipplejs';
-import { Deltas } from '../interface/deltas';
+import { Deltas2, Deltas3 } from '../interface/deltas';
 import { MovementController } from '../interface/movement-controller';
 import { RotationController } from '../interface/rotation-controller';
 
@@ -12,8 +12,8 @@ export class JoystickService implements MovementController, RotationController {
   rotationSpeed = 0.001;
   movementEnabled: boolean;
   rotationEnabled: boolean;
-  movement: Deltas;
-  rotation: Deltas;
+  movement: Deltas3;
+  rotation: Deltas2;
   
   private movementJoystick;
   private rotationJoystick;
@@ -24,7 +24,8 @@ export class JoystickService implements MovementController, RotationController {
     this.movementEnabled = true;
     this.movement = {
       dx: 0,
-      dy: 0
+      dy: 0,
+      dz: 0
     };
     const canvas = document.querySelector('app-canvas');
     const div = document.createElement('div');
@@ -49,7 +50,8 @@ export class JoystickService implements MovementController, RotationController {
       if (this.movementEnabled) {
         this.movement = {
           dx: 0,
-          dy: 0
+          dy: 0,
+          dz: 0
         };
       }
     });

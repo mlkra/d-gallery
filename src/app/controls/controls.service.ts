@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Camera } from '../rendering/model/camera';
 import { Scene } from '../rendering/model/scene';
-import { StorageService } from '../storage/storage.service';
-import { ImageService } from '../rendering/image/image.service';
 import { JoystickService } from './service/joystick.service';
 import { KeyboardService } from './service/keyboard.service';
 import { MouseService } from './service/mouse.service';
@@ -17,11 +15,10 @@ import { TriggerButtonService } from './service/trigger-button.service';
 })
 export class ControlsService {
   private lastTime: number;
-  private movementController: MovementController;
-  private rotationController: RotationController;
-  private triggerController: TriggerController;
+  private movementControllers: MovementController[];
+  private rotationControllers: RotationController[];
+  private triggerControllers: TriggerController[];
 
-  // TODO remove later
   constructor(
     private joystickService: JoystickService,
     private keyboardService: KeyboardService,
@@ -31,22 +28,33 @@ export class ControlsService {
 
   init() {
     this.lastTime = 0;
+    this.movementControllers = [];
+    this.rotationControllers = [];
+    this.triggerControllers = [];
     if ((pointer.available()) && !('ontouchstart' in document.documentElement)) {
-      this.movementController = this.keyboardService;
-      this.rotationController = this.mouseService;
-      this.triggerController = this.keyboardService;
+      this.movementControllers.push(this.keyboardService);
+      this.rotationControllers.push(this.keyboardService);
+      this.rotationControllers.push(this.mouseService);
+      this.triggerControllers.push(this.keyboardService);
     } else if ('ontouchstart' in document.documentElement) {
-      this.movementController = this.joystickService;
-      this.rotationController = this.joystickService;
-      this.triggerController = this.triggerButtonService;
+      this.movementControllers.push(this.joystickService);
+      this.rotationControllers.push(this.joystickService);
+      this.triggerControllers.push(this.triggerButtonService);
     } else {
-      this.movementController = this.keyboardService;
-      this.rotationController = this.keyboardService;
-      this.triggerController = this.keyboardService;
+      this.movementControllers.push(this.keyboardService);
+      this.rotationControllers.push(this.keyboardService);
+      this.triggerControllers.push(this.keyboardService);
     }
-    this.movementController.initMovement();
-    this.rotationController.initRotation();
-    this.triggerController.initTrigger();
+
+    this.movementControllers.forEach((mC) => {
+      mC.initMovement();
+    });
+    this.rotationControllers.forEach((rC) => {
+      rC.initRotation();
+    });
+    this.triggerControllers.forEach((tC) => {
+      tC.initTrigger();
+    });
   }
 
   controlsLoop(scene: Scene, camera: Camera, timestamp: number) {
@@ -67,20 +75,28 @@ export class ControlsService {
   }
 
   private setControlsState(enabled: boolean) {
-    this.movementController.movementEnabled = enabled;
-    this.rotationController.rotationEnabled = enabled;
-    this.triggerController.triggerEnabled = enabled;
+    this.movementControllers.forEach((mC) => {
+      mC.movementEnabled = enabled;
+    });
+    this.rotationControllers.forEach((rC) => {
+      rC.rotationEnabled = enabled;
+    });
+    this.triggerControllers.forEach((tC) => {
+      tC.triggerEnabled = enabled;
+    });
   }
 
   private checkTrigger(scene: Scene, camera: Camera) {
-    if (this.triggerController.triggerDownload) {
-      this.triggerController.triggerDownload = false;
-      let img = this.startDownload(scene, camera);
-      if (img) {
-        return {
-          download: true,
-          texture: img.texture
-        };
+    for (const tC of this.triggerControllers) {
+      if (tC.triggerDownload) {
+        tC.triggerDownload = false;
+        let img = this.startDownload(scene, camera);
+        if (img) {
+          return {
+            download: true,
+            texture: img.texture
+          };
+        }
       }
     }
     return {
@@ -89,25 +105,32 @@ export class ControlsService {
   }
   
   private moveCamera(camera: Camera, time: number) {
-    const movement = this.movementController.movement;
-    const speed = this.movementController.movementSpeed;
-    if (movement.dx !== 0) {
-      camera.moveX(movement.dx * speed * time);
-    }
-    if (movement.dy !== 0) {
-      camera.moveZ(movement.dy * speed * time);
-    }
+    this.movementControllers.forEach((mC) => {
+      const movement = mC.movement;
+      const speed = mC.movementSpeed;
+      if (movement.dx !== 0) {
+        camera.moveX(movement.dx * speed * time);
+      }
+      if (movement.dz !== 0) {
+        camera.moveY(movement.dz * speed * time);
+      }
+      if (movement.dy !== 0) {
+        camera.moveZ(movement.dy * speed * time);
+      }
+    });
   }
 
   private rotateCamera(camera: Camera, time: number) {
-    const rotation = this.rotationController.rotation;
-    const speed = this.rotationController.rotationSpeed;
-    if (rotation.dx !== 0) {
-      camera.rotateY(rotation.dx * speed * time);
-    }
-    if (rotation.dy !== 0) {
-      camera.rotateX(rotation.dy * speed * time);
-    }
+    this.rotationControllers.forEach((rC) => {
+      const rotation = rC.rotation;
+      const speed = rC.rotationSpeed;
+      if (rotation.dx !== 0) {
+        camera.rotateY(rotation.dx * speed * time);
+      }
+      if (rotation.dy !== 0) {
+        camera.rotateX(rotation.dy * speed * time);
+      }
+    });
   }
 
   private startDownload(scene: Scene, camera: Camera) {

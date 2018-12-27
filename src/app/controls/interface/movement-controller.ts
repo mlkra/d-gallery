@@ -1,9 +1,9 @@
-import { Deltas } from "./deltas";
+import { Deltas3 } from "./deltas";
 
 export interface MovementController {
     movementSpeed: number;
     movementEnabled: boolean;
-    movement: Deltas;
+    movement: Deltas3;
 
     initMovement(): void;
 }

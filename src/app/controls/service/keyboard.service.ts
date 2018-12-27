@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Deltas } from '../interface/deltas';
+import { Deltas2, Deltas3 } from '../interface/deltas';
 import { MovementController } from '../interface/movement-controller';
 import { RotationController } from '../interface/rotation-controller';
 import { TriggerController } from '../interface/trigger-controller';
 
 enum MovementButtons {
-  Up = 'w',
-  Down = 's',
+  Front = 'w',
+  Back = 's',
   Left = 'a',
-  Right = 'd'
+  Right = 'd',
+  Up = 'r',
+  Down = 'f'
 }
 
 enum RotationButtons {
@@ -30,8 +32,8 @@ export class KeyboardService implements MovementController, RotationController, 
   rotationEnabled: boolean;
   triggerEnabled: boolean;
   triggerDownload: boolean;
-  movement: Deltas;
-  rotation: Deltas;
+  movement: Deltas3;
+  rotation: Deltas2;
 
   constructor() { }
 
@@ -39,16 +41,17 @@ export class KeyboardService implements MovementController, RotationController, 
     this.movementEnabled = true;
     this.movement = {
       dx: 0,
-      dy: 0
+      dy: 0,
+      dz: 0
     };
     window.addEventListener('keydown', (event) => {
       const key = event.key;
       if (this.movementEnabled) {
         switch (key) {
-          case MovementButtons.Up:
+          case MovementButtons.Front:
             this.movement.dy = 1;
             break;
-          case MovementButtons.Down:
+          case MovementButtons.Back:
             this.movement.dy = -1;
             break;
           case MovementButtons.Left:
@@ -57,6 +60,12 @@ export class KeyboardService implements MovementController, RotationController, 
           case MovementButtons.Right:
             this.movement.dx = -1;
             break;
+          case MovementButtons.Up:
+            this.movement.dz = 1;
+            break;
+          case MovementButtons.Down:
+            this.movement.dz = -1;
+            break;
         }
       }
     });
@@ -64,12 +73,12 @@ export class KeyboardService implements MovementController, RotationController, 
       const key = event.key;
       if (this.movementEnabled) {
         switch (key) {
-          case MovementButtons.Up:
+          case MovementButtons.Front:
             if (this.movement.dy > 0) {
               this.movement.dy = 0;
             }
             break;
-          case MovementButtons.Down:
+          case MovementButtons.Back:
           if (this.movement.dy < 0) {
             this.movement.dy = 0;
           }
@@ -80,9 +89,19 @@ export class KeyboardService implements MovementController, RotationController, 
             }
             break;
           case MovementButtons.Right:
-          if (this.movement.dx < 0) {
-            this.movement.dx = 0;
-          }
+            if (this.movement.dx < 0) {
+              this.movement.dx = 0;
+            }
+            break;
+          case MovementButtons.Up:
+            if (this.movement.dz > 0) {
+              this.movement.dz = 0;
+            }
+            break;
+          case MovementButtons.Down:
+            if (this.movement.dz < 0) {
+              this.movement.dz = 0;
+            }
             break;
         }
       }
@@ -163,10 +182,10 @@ export class KeyboardService implements MovementController, RotationController, 
       const key = event.key;
       if (this.movementEnabled) {
         switch (key) {
-          case MovementButtons.Up:
+          case MovementButtons.Front:
             this.movement.dy = 1;
             break;
-          case MovementButtons.Down:
+          case MovementButtons.Back:
             this.movement.dy = -1;
             break;
           case MovementButtons.Left:
@@ -205,12 +224,12 @@ export class KeyboardService implements MovementController, RotationController, 
       const key = event.key;
       if (this.movementEnabled) {
         switch (key) {
-          case MovementButtons.Up:
+          case MovementButtons.Front:
             if (this.movement.dy > 0) {
               this.movement.dy = 0;
             }
             break;
-          case MovementButtons.Down:
+          case MovementButtons.Back:
           if (this.movement.dy < 0) {
             this.movement.dy = 0;
           }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as pointer from 'pointer-lock';
-import { Deltas } from '../interface/deltas';
+import { Deltas2 } from '../interface/deltas';
 import { RotationController } from '../interface/rotation-controller';
 
 @Injectable({
@@ -29,7 +29,7 @@ export class MouseService implements RotationController {
     }
   }
 
-  get rotation(): Deltas {
+  get rotation(): Deltas2 {
     const rot = this._rotation;
     this._rotation = {
       dx: 0,
@@ -37,13 +37,13 @@ export class MouseService implements RotationController {
     };
     return rot;
   }
-  set rotation(rotation: Deltas) {
+  set rotation(rotation: Deltas2) {
     this._rotation = rotation;
   }
   
   private canvas: HTMLCanvasElement;
   private pointer;
-  private _rotation: Deltas;
+  private _rotation: Deltas2;
   private _rotationEnabled: boolean;
 
   constructor() { }
