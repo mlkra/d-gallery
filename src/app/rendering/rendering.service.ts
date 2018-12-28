@@ -6,6 +6,7 @@ import { Camera } from './model/camera';
 import { Floor } from './model/floor';
 import { Image } from './model/image';
 import { Crosshair } from './model/crosshair';
+import { Box } from './model/box';
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +36,7 @@ export class RenderingService {
     if (scene.images) {
       this.renderImages(scene.images, camera);
     }
+    this.renderBox(scene.box, camera);
     this.renderCrosshair(this.crosshair, camera);
     gl.flush();
   }
@@ -102,6 +104,39 @@ export class RenderingService {
     gl.drawArrays(gl.LINES, 0, 4);
     gl.disableVertexAttribArray(wrapper.positionAttribLocation);
     gl.enable(gl.DEPTH_TEST);
+  }
+
+  private renderBox(box: Box, camera: Camera) {
+    const gl = this.gl;
+    const wrapper = this.shaderService.colorProgramWrapper;
+    gl.useProgram(wrapper.program);
+    gl.bindBuffer(gl.ARRAY_BUFFER, box.positionBuffer);
+    gl.enableVertexAttribArray(wrapper.positionAttribLocation);
+    gl.vertexAttribPointer(
+      wrapper.positionAttribLocation,
+      3,
+      gl.FLOAT,
+      false,
+      0,
+      0
+    );
+    const modelViewProjection = mat4.create();
+    mat4.multiply(
+      modelViewProjection,
+      camera.projectionMatrix,
+      camera.viewMatrix
+    );
+    gl.uniformMatrix4fv(
+      wrapper.modelViewProjectionUniformLocation,
+      false,
+      modelViewProjection
+    );
+    gl.uniform4f(
+      wrapper.colorUniformLocation,
+      0, 0, 0, 1.0
+    );
+    gl.drawArrays(gl.LINES, 0, 24);
+    gl.disableVertexAttribArray(wrapper.positionAttribLocation);
   }
 
   private renderImages(images: Image[], camera: Camera) {

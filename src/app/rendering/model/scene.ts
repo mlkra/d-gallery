@@ -2,13 +2,16 @@ import { Floor } from './floor';
 import { Image } from './image';
 import { Ray } from './ray';
 import { vec3 } from 'gl-matrix';
+import { Box } from './box';
 
 export class Scene {
     floor: Floor;
+    box: Box;
     images: Image[] = [];
 
     constructor(gl: WebGLRenderingContext) {
       this.floor = new Floor(gl);
+      this.box = new Box(gl);
     }
 
     intersect(ray: Ray) {
